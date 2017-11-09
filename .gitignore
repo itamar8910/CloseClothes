@@ -1,3 +1,4 @@
 virtenv/
 *.jpg
 *.npy
+.idea/

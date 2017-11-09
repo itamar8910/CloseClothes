@@ -28,14 +28,14 @@ def bottleneck_features(dir_path, model_name = 'vgg16' ,img_width=150,img_height
         img_width = 224
     else:
         raise Exception("model type " + str(model_name) + " is not supported")
-    
+
     generator = datagen.flow_from_directory(
         dir_path,
         target_size=(img_width, img_height),
         batch_size=batch_size,
         class_mode=None,
         shuffle=False)
-    
+
     bottleneck_features_train = model.predict_generator(generator, 2)
     print("num of feats:" , len(bottleneck_features_train) ,",", bottleneck_features_train.shape)
     if not exists(join(dir_path,'feats')):
@@ -51,5 +51,5 @@ if __name__ == "__main__":
         print("Missing path to dir")
     else:
         if len(sys.argv) >= 3:
-            bottleneck_features(sys.argv[1], model_name = sys.argv[3])
+            bottleneck_features(sys.argv[1], model_name = sys.argv[2])
         bottleneck_features(sys.argv[1])

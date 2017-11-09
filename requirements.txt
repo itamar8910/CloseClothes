@@ -8,6 +8,7 @@ checkbox-support==0.22
 click==6.7
 command-not-found==0.3
 cryptography==1.2.3
+cycler==0.10.0
 defer==1.0.6
 enum34==1.1.6
 feedparser==5.1.3
@@ -27,6 +28,7 @@ lxml==3.5.0
 Mako==1.0.3
 Markdown==2.6.9
 MarkupSafe==1.0
+matplotlib==2.1.0
 numpy==1.13.3
 oauthlib==1.0.3
 olefile==0.44
@@ -45,8 +47,10 @@ pygobject==3.20.0
 PyJWT==1.3.0
 pyparsing==2.0.3
 python-apt==1.1.0b1
+python-dateutil==2.6.1
 python-debian==0.1.27
 python-systemd==231
+pytz==2017.3
 pyxdg==0.25
 PyYAML==3.12
 reportlab==3.3.0
