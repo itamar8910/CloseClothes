@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import cv2
+#import cv2
 import numpy as np
 import copy
 
@@ -208,7 +208,7 @@ def resnet152_model(weights_path=None):
     return model
 
 def predict_class(im_path):
-    im = cv2.resize(cv2.imread(im_path), (224, 224)).astype(np.float32)
+    #im = cv2.resize(cv2.imread(im_path), (224, 224)).astype(np.float32)
 
     # Remove train image mean
     im[:,:,0] -= 103.939
@@ -247,7 +247,7 @@ def predict_class(im_path):
     pprint([(x, id2label[x], preds[x]) for x in top_preds])
 
 def get_feats(im_path):
-    im = cv2.resize(cv2.imread(im_path), (224, 224)).astype(np.float32)
+   # im = cv2.resize(cv2.imread(im_path), (224, 224)).astype(np.float32)
 
     # Remove train image mean
     im[:,:,0] -= 103.939
