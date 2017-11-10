@@ -13,7 +13,7 @@ def closest_pairs(dir_path):
     for index in range(len(names_feats)):
         neighbor_name,distance = closest_feat(index,names_feats)
         pairs.append((names_feats[index][0],neighbor_name,distance))
-    return pairs
+    return sorted(pairs, key=lambda x: int(x[0][:x[0].index(".npy")]))
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
