@@ -40,10 +40,17 @@ def bottleneck_features(dir_path, model_name = 'vgg16' ,img_width=150,img_height
     print("num of feats:" , len(bottleneck_features_train) ,",", bottleneck_features_train.shape)
     if not exists(join(dir_path,'feats')):
         makedirs(join(dir_path,'feats'))
-
-    for name,features in zip(listdir(join(dir_path, "sub_imgs")),bottleneck_features_train):
+    '''
+    print(generator.class_indices)
+    print(generator.classes)
+    print(generator.filenames)
+    print([x for x in listdir(join(dir_path, "sub_imgs"))])
+    '''
+    for fname,features in zip(generator.filenames, bottleneck_features_train):
         #print(name, features)
-        np.save(open(join(dir_path, "feats", name[:name.index('.jpg')] +  '.npy'), 'wb'), features)
+        print(fname)
+        name = fname[fname.index('/')+1:fname.index('.jpg')]
+        np.save(open(join(dir_path, "feats", name +  '.npy'), 'wb'), features)
 
 
 if __name__ == "__main__":
