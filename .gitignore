@@ -2,6 +2,8 @@ virtenv/
 *.jpg
 *.png
 *.npy
+*.zip
+*.swp
 .idea/
 .vscode/
 __pycache__/
