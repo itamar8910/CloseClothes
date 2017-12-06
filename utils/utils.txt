@@ -1,0 +1,2 @@
+git@github.com:Tadaboody/google-images-download.git
+https://github.com/jacobgil/keras-dcgan.git
