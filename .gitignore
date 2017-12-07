@@ -7,3 +7,6 @@ virtenv/
 .idea/
 .vscode/
 __pycache__/
+utils/*/
+Data/*/
+images/

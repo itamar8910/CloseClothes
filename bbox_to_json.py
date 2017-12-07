@@ -1,18 +1,19 @@
-import os
 import json
-from PIL import Image
+import os
 import random
+TRAIN_TEST_SPLIT = .7
+DATA_PATH = os.path.join("utils","TensorBox","data","DeepFashion")
 def main():
-    json_data = []
+    """ """
     upper_body_images = set()
     index_to_type = []
 
-    with open("Data/Anno/list_category_cloth.txt") as f:
-        lines = f.readlines()
+    with open(os.path.join(DATA_PATH,"Anno/list_category_cloth.txt")) as file:
+        lines = file.readlines()
         index_to_type = [[x for x in line.split()][1] for line in lines[2:]]
 
-    with open("Data/Anno/list_category_img.txt") as f:
-        lines = f.readlines()
+    with open(os.path.join(DATA_PATH,"Anno/list_category_img.txt")) as file:
+        lines = file.readlines()
         for line in lines[2:]:
             #print line
             data = line.split(" ")
@@ -24,8 +25,8 @@ def main():
 
     all_data = []
 
-    with open("Data/Anno/list_bbox.txt") as f:
-        lines = f.readlines()
+    with open(os.path.join(DATA_PATH,"Anno/list_bbox.txt")) as file:
+        lines = file.readlines()
         #print len(lines)
         for line in lines[2:]:
             data = line.split(" ")
@@ -33,23 +34,21 @@ def main():
             #rint data[0]
             if data[0] in upper_body_images:
                 all_data.append({
-                "image_path":data[0], "rects":{"x1":int(data[1]),"y1":int(data[2]), "x2":int(data[3]), "y2":int(data[4]) }
+                "image_path":data[0], "rects":[{"x1":int(data[1]),"y1":int(data[2]), "x2":int(data[3]), "y2":int(data[4]) }]
                 })
             #json_data.append()
 
-    TRAIN_TEST_SPLIT = .7
 
 
 
     shuffled_data = random.sample(all_data, len(all_data))
-
     split_index = int(len(all_data) * TRAIN_TEST_SPLIT)
-
     train_data = shuffled_data[:split_index]
-
     test_data = shuffled_data[split_index:]
-
-
-    json.dump(train_data, open("Data/bb_train_unresized.json",'w'))  
-    json.dump(test_data, open("Data/bb_test_unresized.json",'w'))	
+    print("saving...")
+    json.dump(train_data, open(os.path.join(DATA_PATH,"bb_train_unresized.json"),'w'),indent=2)  
+    json.dump(test_data, open(os.path.join(DATA_PATH,"bb_test_unresized.json"),'w'),indent=2)
     print("done")
+
+if __name__ == '__main__':
+    main()
