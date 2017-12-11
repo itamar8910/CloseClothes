@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #>utils.txt #clear file
 current_repo=$(git config --get remote.origin.url);
-echo $current_repo
 for dir in ./*/
 do
 	cd $dir;
