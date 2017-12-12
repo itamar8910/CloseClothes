@@ -1,7 +1,7 @@
 
 
 import numpy as np
-import keras.keras
+import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
@@ -76,22 +76,12 @@ def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,ve
 
 if __name__ == "__main__":
     # Generate dummy data
-    input_shape = (300, 300)
+    input_shape = (200, 200)
 
-    GENERATE_DATA = False
+    GENERATE_DATA = True
     if GENERATE_DATA:
-        X, Y = gen_XY_data('bb_test_unresized.json', input_shape, join(dirname(realpath(__file__)), "Data/Img/"), MAX_SAMPLES = 1000,verbose = True)
+        X, Y = gen_XY_data('bb_test_unresized.json', input_shape, join(dirname(realpath(__file__)), "DeepFashion/Data/"), MAX_SAMPLES = 1,verbose = True)
         print(X.shape, Y.shape)
-        with open('bbox_data_dummy.p', 'wb') as f:
-            pickle.dump((X, Y), f)
-
-    
-
-
-    with open('bbox_data_dummy.p', 'rb') as f:
-        X, Y = pickle.load(f)
-    print(X.shape, Y.shape)
-
     X = X.reshape(*X.shape, 1)
     #Y = Y.reshape(*Y.shape, 1)
     print(X.shape, Y.shape)
@@ -126,7 +116,10 @@ if __name__ == "__main__":
 
     model.compile(loss='mse', optimizer='adam')
 
-    model.fit(x_train, y_train, batch_size=32, epochs=10)
-    score = model.evaluate(x_test, y_test, batch_size=32)
+    model.fit(x_train, y_train, batch_size=32, epochs=50)
+    score_train = model.evaluate(x_train, y_train, batch_size=32)
+    score_test = model.evaluate(x_test, y_test, batch_size=32)
+    print(score_train)
+    print(score_test)
     model.save('save_model_{}.h5'.format(str(time.time())))
 
