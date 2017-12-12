@@ -31,7 +31,7 @@ def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,ve
     start_time = time.time()
     print("Extracting X, Y data")
     for (img_data, index) in zip(bbox_json, range(len(bbox_json))):
-        if index > MAX_SAMPLES:
+        if index >= MAX_SAMPLES:
             break
         if verbose and index % verbose_steps == 1:
             delta_t = time.time() - start_time
