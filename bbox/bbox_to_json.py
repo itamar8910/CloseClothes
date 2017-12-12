@@ -1,7 +1,6 @@
 import json
 import os
 import random
-
 TRAIN_TEST_SPLIT = .7
 DATA_PATH = os.path.join("utils","TensorBox","data","DeepFashion")
 def main():

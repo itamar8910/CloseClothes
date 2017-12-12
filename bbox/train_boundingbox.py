@@ -1,3 +1,5 @@
+
+
 import numpy as np
 import keras
 from keras.models import Sequential
@@ -66,7 +68,6 @@ def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,ve
         
 
         #draw_bbox(resized, x, y, width, height)
-        print(resized)
 
         X.append(resized)
         Y.append(bbox)
@@ -79,7 +80,7 @@ if __name__ == "__main__":
 
     GENERATE_DATA = True
     if GENERATE_DATA:
-        X, Y = gen_XY_data('bb_test_unresized.json', input_shape, join(dirname(realpath(__file__)), "DeepFashion/"), MAX_SAMPLES = 1,verbose = True)
+        X, Y = gen_XY_data('bb_test_unresized.json', input_shape, join(dirname(realpath(__file__)), "DeepFashion/Data/"), MAX_SAMPLES = 1,verbose = True)
         print(X.shape, Y.shape)
     X = X.reshape(*X.shape, 1)
     #Y = Y.reshape(*Y.shape, 1)
