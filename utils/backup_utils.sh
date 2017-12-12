@@ -6,6 +6,6 @@ do
 	cd $dir;
 	util_repo=$(git config --get remote.origin.url);
 	[ "$util_repo" != "$current_repo" ] &&
-		$utils_repo >>../utils.txt 
+		echo "$util_repo" >>../utils.txt 
 	cd ..;
 done
