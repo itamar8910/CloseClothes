@@ -1,11 +1,11 @@
 
 
 import numpy as np
-import utils.keras
-from utils.keras.models import Sequential
-from utils.keras.layers import Dense, Dropout, Flatten
-from utils.keras.layers import Conv2D, MaxPooling2D
-from utils.keras.optimizers import SGD
+import keras.keras
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D
+from keras.optimizers import SGD
 import json
 import cv2
 from os.path import join, dirname, realpath
