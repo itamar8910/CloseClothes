@@ -11,3 +11,5 @@ utils/*/
 Data/*/
 images/
 DeepFashion
+venv/
+**/*.h5
