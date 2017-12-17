@@ -2,7 +2,7 @@ import os
 import json
 
 if __name__ == "__main__":
-    META_CATS = {'Jacket': {'Anorak', 'Bomber', 'Jacket', 'Paraka'},
+    META_CATS = {'Jacket': {'Anorak', 'Bomber', 'Jacket', 'Parka'},
                 'Cardigan': {'Cardigan'},
                 'Sweater': {'Sweater'},
                 'Tank': {'Tank'},
