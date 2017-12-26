@@ -16,9 +16,9 @@ def count_sample_num(dir_path):
     return len(listdir(join(dir_path, "sub_imgs")))
 
 @click.command()
-@click.argument("dir_path",help="Directory containing image directories")
-@click.argument("model_name",help="model name or json file")
-@click.option("-w","--weights",help="Custom Model hdf5 weight file")
+@click.argument("dir_path")
+@click.argument("model_name")
+@click.option("-w","--weights",help='Custom Model hdf5 weight file')
 def bottleneck_features(dir_path, weights, model_name = 'vgg16',img_width=150,img_height=150,batch_size=16):
 
     if model_name == 'vgg16':
