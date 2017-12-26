@@ -14,3 +14,4 @@ DeepFashion
 venv/
 **/*.h5
 **/*.hdf5
+**/*.html

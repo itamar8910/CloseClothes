@@ -13,7 +13,8 @@ def closest_pairs(dir_path):
     for index in range(len(names_feats)):
         neighbor_name,distance = closest_feat(index,names_feats)
         pairs.append((names_feats[index][0],neighbor_name,distance))
-    return sorted(pairs, key=lambda x: int(x[0][:x[0].index(".npy")]))
+    return pairs
+    # return sorted(pairs, key=lambda x: int(x[0][:x[0].index(".npy")]))
 
 def get_KNN(feats_dir, sample_name, k = 1):
     sample_feats = np.load(os.path.join(feats_dir, sample_name+".npy")).flatten()
