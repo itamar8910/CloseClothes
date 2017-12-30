@@ -154,7 +154,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2))
     x = Activation('relu', name='res' + str(stage) + block + '_relu')(x)
     return x
 
-def resnet152_model(weights_path=None):
+def resnet152_model(weights_path=None, num_classes = 1000, input_shape = (224,224)):
     '''Instantiate the ResNet152 architecture,
     # Arguments
         weights_path: path to pretrained weight file
@@ -167,10 +167,10 @@ def resnet152_model(weights_path=None):
     global bn_axis
     if K.image_dim_ordering() == 'tf':
         bn_axis = 3
-        img_input = Input(shape=(224, 224, 3), name='data')
+        img_input = Input(shape=(input_shape[0], input_shape[1], 3), name='data')
     else:
         bn_axis = 1
-        img_input = Input(shape=(3, 224, 224), name='data')
+        img_input = Input(shape=(3, input_shape[0], input_shape[1]), name='data')
             
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
     x = Conv2D(64, (7, 7), strides=(2, 2), name='conv1', use_bias=False)(x)
@@ -197,7 +197,7 @@ def resnet152_model(weights_path=None):
 
     x_fc = AveragePooling2D((7, 7), name='avg_pool')(x)
     x_fc = Flatten()(x_fc)
-    x_fc = Dense(1000, activation='softmax', name='fc1000')(x_fc)
+    x_fc = Dense(num_classes, activation='softmax', name='fc{}'.format(num_classes))(x_fc)
 
     model = Model(img_input, x_fc)
     
