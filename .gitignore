@@ -15,3 +15,5 @@ venv/
 **/*.h5
 **/*.hdf5
 **/*.html
+classification/*.json
+**/clf_model.json
