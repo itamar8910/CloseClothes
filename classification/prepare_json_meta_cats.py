@@ -21,6 +21,6 @@ if __name__ == "__main__":
                 meta_cat_count[metacat] = meta_cat_count[metacat] + 1
                 break
 
-    print meta_cat_count
+    print(meta_cat_count)
     
     json.dump(imgs_metacats, open('imgs_meta_categories.json', 'w'), indent=4)
