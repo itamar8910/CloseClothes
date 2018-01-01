@@ -1,4 +1,5 @@
 import os
+import json
 from resnetimpl import resnet_152_without_top
 from keras import backend as K
 from keras.models import Model
@@ -28,9 +29,12 @@ if __name__ == "__main__":
         model.summary()
     else:
         raise Exception("Unsupported resnet size")
-
-    TRAIN_DIR = "../../DeepFashion/clf_train/"
-    TEST_DIR = "../../DeepFashion/clf_test/"
+    model_json = model.to_json()
+    with open(os.join(__file__.__dir__,'clf_model.json','w') as file:
+        json.dump(model_json,file)
+    print("Saved clf model")
+    TRAIN_DIR = "../DeepFashion/clf_train/"
+    TEST_DIR = "../DeepFashion/clf_test/"
 
     train_datagen = ImageDataGenerator(
         rescale=1./255,
@@ -62,5 +66,4 @@ if __name__ == "__main__":
             steps_per_epoch=2000,
             epochs=50,
             validation_data=validation_generator,
-            validation_steps=800,
-            callbacks=keras.callbacks.ModelCheckpoint((filepath, monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)))
+            validation_steps=800)
