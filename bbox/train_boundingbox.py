@@ -22,6 +22,18 @@ def draw_bbox(img_array, x, y, width, height):
 
     pil_img.show()
 
+def prep_image_and_bbox(img,input_shape):
+    """
+    preprocess image for bbox training resizes it and scales it between -1,1
+    returns the resized image and its resize scalse
+    """
+    orig_shape = img.shape
+    resized = cv2.resize(img, input_shape)
+    scale = np.array([x/float(y) for x, y in zip(input_shape , orig_shape)])
+    resized  = (resized)/(255.0/2.0) - 1 # scale between -1, 1 
+    return resized,scale
+    
+    
 def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,verbose = False):
     bbox_json = json.load(open(bbox_json_path, 'r'))
     if MAX_SAMPLES is None:
@@ -31,23 +43,16 @@ def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,ve
     verbose_steps = 100
     start_time = time.time()
     print("Extracting X, Y data")
-    for (img_data, index) in zip(bbox_json, range(len(bbox_json))):
-        if index >= MAX_SAMPLES:
-            break
+    for index,img_data in enumerate(bbox_json[:MAX_SAMPLES]):
         if verbose and index % verbose_steps == 1:
             delta_t = time.time() - start_time
             time_per_step = delta_t / float(index)
             time_left = (min(len(bbox_json), MAX_SAMPLES) - index) * time_per_step
            # print('time left:{0:.1f} s'.format(time_left))
             print('progress: {0:.1f}%, time left: {1:.1f}s'.format(index/float(min(len(bbox_json), MAX_SAMPLES))*100.0, time_left))
-        #print(join(rel_img_path, img_data['image_path']))
         print("reading image from path:" , join(rel_img_path, img_data['image_path']))
         img = cv2.imread(join(rel_img_path, img_data['image_path']), 0)
-        #print img.shape
-        orig_shape = img.shape
-        resized = cv2.resize(img, input_shape)
-        scale = np.array([x/float(y) for x, y in zip(input_shape , orig_shape)])
-        
+        resized,scale = prep_image(img,input_shape)
         rect = img_data['rects'][0]
         x = float(rect['x1'])
         y = float(rect['y1'])
@@ -63,10 +68,10 @@ def gen_XY_data(bbox_json_path, input_shape, rel_img_path, MAX_SAMPLES = None,ve
         bbox = np.array([x,y,width,height])
         
         resized  = (resized)/(255.0/2.0) - 1 # scale between -1, 1 
-        bbox = np.array([x/float(resized.shape[1]), # scale between 0, 1
-                         y/float(resized.shape[0]),
-                         width/float(resized.shape[1]), 
-                         height/float(resized.shape[0])])
+        bbox = np.array([x/float(input_shape[1]), # scale between 0, 1
+                         y/float(input_shape[0]),
+                         width/float(input_shape[1]), 
+                         height/float(input_shape[0])])
         
 
         #draw_bbox(resized, x, y, width, height)

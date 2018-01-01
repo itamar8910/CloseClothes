@@ -62,8 +62,4 @@ if __name__ == "__main__":
             steps_per_epoch=2000,
             epochs=50,
             validation_data=validation_generator,
-<<<<<<< HEAD
             validation_steps=800)
-=======
-            validation_steps=800)
->>>>>>> a3f2e2c514d157e4e03281096af593650bc497af
