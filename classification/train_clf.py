@@ -7,12 +7,36 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, AveragePooling2D, Z
 from keras.applications.resnet50 import ResNet50
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD
+from keras import backend as K
+import tensorflow as tf
+import functools
+def _center_loss_func(features, labels, alpha, num_classes):
+    feature_dim = features.get_shape()[1]
+    # Each output layer use one independed center: scope/centers
+    centers = K.zeros([num_classes, feature_dim])
+    labels = K.reshape(labels, [-1])
+    labels = tf.to_int32(labels)
+    centers_batch = tf.gather(centers, labels)
+    diff = (1 - alpha) * (centers_batch - features)
+    centers = tf.scatter_sub(centers, labels, diff)
+    loss = tf.reduce_mean(K.square(features - centers_batch))
+    return loss
+
+def get_center_loss(alpha, num_classes):
+    """Center loss based on the paper "A Discriminative 
+       Feature Learning Approach for Deep Face Recognition"
+       (http://ydwen.github.io/papers/WenECCV16.pdf)
+    """
+    @functools.wraps(_center_loss_func)
+    def center_loss(y_true, y_pred):
+        return _center_loss_func(y_pred, y_true, alpha, num_classes)
+    return center_loss
 
 if __name__ == "__main__":
     print("dim ordering:", K.image_dim_ordering())
     NUM_CLASSES = 6
     INPUT_SHAPE = (224, 224, 3)
-    RESNET_SIZE = 50
+    RESNET_SIZE = "centerloss"
     if RESNET_SIZE == 152: # note: this size is currently not working
         initial_model = resnet_152_without_top()
         last = initial_model.output
@@ -28,7 +52,11 @@ if __name__ == "__main__":
         model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
         model.summary()
     else:
-        raise Exception("Unsupported resnet size")
+        model = ResNet50(include_top=True, weights=None, classes=NUM_CLASSES)
+        sgd = SGD(lr=1e-2, decay=1e-6, momentum=0.9, nesterov=True)
+        center_loss = get_center_loss(0.5,NUM_CLASSES)
+        model.compile(optimizer='sgd',loss = center_loss)
+        model.summary()
 
     TRAIN_DIR = config.TRAIN_DIR
     TEST_DIR = config.TEST_DIR    
