@@ -1,4 +1,5 @@
 import os
+import json
 import config
 from resnetimpl import resnet_152_without_top
 from keras import backend as K
@@ -58,6 +59,10 @@ if __name__ == "__main__":
         model.compile(optimizer='sgd',loss = center_loss)
         model.summary()
 
+    model_json = model.to_json()
+    with open(os.join(__file__.__dir__,'clf_model.json','w') as file:
+        json.dump(model_json,file)
+    print("Saved clf model")
     TRAIN_DIR = config.TRAIN_DIR
     TEST_DIR = config.TEST_DIR    
 
