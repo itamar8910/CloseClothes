@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     filepath="weights_checkpoint_resnet152_1.hdf5"
     model_json = model.to_json()
-    with open(os.join(__file__.__dir__,'clf_model.json','w') as file:
+    with open(os.join(__file__.__dir__,'clf_model.json','w')) as file:
         json.dump(model_json,file)
     print("Saved clf model")
     TRAIN_DIR = config.TRAIN_DIR
