@@ -1,4 +1,6 @@
 import os
+import json
+import config
 from resnetimpl import resnet_152_without_top
 from keras import backend as K
 from keras.models import Model
@@ -66,9 +68,12 @@ if __name__ == "__main__":
 
 
     filepath="weights_checkpoint_resnet152_1.hdf5"
-    TRAIN_DIR = "../../DeepFashion/clf_train_dummy/"
-    TEST_DIR = "../../DeepFashion/clf_test_dummy/"
-
+    model_json = model.to_json()
+    with open(os.join(__file__.__dir__,'clf_model.json','w') as file:
+        json.dump(model_json,file)
+    print("Saved clf model")
+    TRAIN_DIR = config.TRAIN_DIR
+    TEST_DIR = config.TEST_DIR    
 
     train_datagen = ImageDataGenerator(
         featurewise_std_normalization=True,
@@ -116,15 +121,9 @@ if __name__ == "__main__":
 
     print("fitting")
     
-    try:#Ask for forgivness, not permission
-        os.mkdir(os.join(os.path.realpth(__file__),"Checkpoints"))
-    except:
-        pass
-    filepath = os.join(os.path.realpth(__file__),"Checkpoints")
     model.fit_generator(
             train_generator,
             steps_per_epoch=2000,
             epochs=50,
             validation_data=validation_generator,
-            validation_steps=800,
-            callbacks=keras.callbacks.ModelCheckpoint((filepath, monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=1)))
+            validation_steps=800) # TODO: add callbacks to save checkpoints

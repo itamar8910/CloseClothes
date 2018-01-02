@@ -1,15 +1,14 @@
 import os
 import json
-
+import config
 if __name__ == "__main__":
     json_data = []
     categories = []
-    with open('../../DeepFashion/Anno/list_category_cloth.txt', 'r') as f:
+    with open(os.path.join(config.ANNO,'list_category_cloth.txt'), 'r') as f:
         lines = f.readlines()
         categories = {line_i+1 : line.split()[0] for line_i, line in enumerate(lines[2:])}
     
-   
-    with open('../../DeepFashion/Anno/list_category_img.txt', 'r') as f:
+    with open(os.path.join(config.ANNO, 'list_category_img.txt'), 'r') as f:
         lines = f.readlines()[2:]
         for line in lines:
             img_path = line.split()[0]

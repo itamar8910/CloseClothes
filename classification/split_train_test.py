@@ -1,11 +1,12 @@
 import os
 import json
+import config
 from random import shuffle
 from shutil import move
 
 def copy_imgs(imgs_paths, imgs_rel_path, dst_dir):
     if not os.path.isdir(dst_dir):
-        os.mkdir(dst_dir)
+        os.makedirs(dst_dir)
     for img_path in imgs_paths:
         #the imgs names are not unique between directories, so we'll append the parnet directory name
         img_name = os.path.split(os.path.split(img_path)[0])[1] + "_" + os.path.split(img_path)[1]
@@ -31,9 +32,9 @@ if __name__ == "__main__":
 
     print(sum([len(meta_cat_to_imgs[cat]) for cat in meta_cat_to_imgs.keys()]))
 
-    TRAIN_DIR = "../../DeepFashion/clf_train/"
-    TEST_DIR = "../../DeepFashion/clf_test/"
-    IMGS_REL_PATH = "../../DeepFashion/"
+    TRAIN_DIR = config.TRAIN_DIR
+    TEST_DIR = config.TEST_DIR
+    IMGS_REL_PATH = config.DEEP_FASHION
     TEST_REL_SIZE = .1
     for meta_cat in meta_cat_to_imgs.keys():
         print("Preparting data for:" , meta_cat)
