@@ -19,7 +19,11 @@ def count_sample_num(dir_path):
 @click.argument("dir_path")
 @click.argument("model_name")
 @click.option("-w","--weights",help='Custom Model hdf5 weight file')
-def bottleneck_features(dir_path, weights, model_name = 'vgg16',img_width=150,img_height=150,batch_size=16):
+@click.option("-n","--name",help='Feature folder name',default=None)
+def main(dir_path, weights,name, model_name = 'vgg16',img_width=150,img_height=150,batch_size=16):
+    bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=150,img_height=150,batch_size=16)
+
+def bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=150,img_height=150,batch_size=16):
 
     if model_name == 'vgg16':
         # build the VGG16 network
@@ -52,7 +56,10 @@ def bottleneck_features(dir_path, weights, model_name = 'vgg16',img_width=150,im
 
     bottleneck_features_train = model.predict_generator(generator, 2)
     print("num of feats:" , len(bottleneck_features_train) ,",", bottleneck_features_train.shape)
-    feat_dir = join(dir_path,model_name + "-feats")
+    if name:
+        feat_dir = join(dir_path,name)
+    else:
+        feat_dir = join(dir_path,model_name + "-feats")
     try:
         makedirs(feat_dir)
     except OSError:
