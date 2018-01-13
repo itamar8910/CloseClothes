@@ -28,7 +28,9 @@ def bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=1
     if model_name == 'vgg16':
         # build the VGG16 network
         model = applications.VGG16(include_top=False, weights='imagenet')
-        datagen = ImageDataGenerator(rescale=1. / 255)
+        #datagen = ImageDataGenerator(rescale=1. / 255)
+        datagen = ImageDataGenerator()
+        datagen.mean = [103.939, 116.779, 123.68]
         img_height = 150
         img_width = 150
     elif model_name == 'resnet_152':
@@ -53,8 +55,8 @@ def bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=1
         save_format='jpg',
         class_mode=None,
         shuffle=False)
-
-    bottleneck_features_train = model.predict_generator(generator, 2)
+    print("starting to predict from generator")
+    bottleneck_features_train = model.predict_generator(generator, 2, verbose=1)
     print("num of feats:" , len(bottleneck_features_train) ,",", bottleneck_features_train.shape)
     if name:
         feat_dir = join(dir_path,name)
@@ -78,4 +80,4 @@ def bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=1
 
 
 if __name__ == "__main__":
-    bottleneck_features()
+    main()
