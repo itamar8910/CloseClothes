@@ -78,4 +78,4 @@ def bottleneck_features(dir_path, weights,name, model_name = 'vgg16',img_width=1
 
 
 if __name__ == "__main__":
-    bottleneck_features()
+    main()
