@@ -58,7 +58,7 @@ def scrape_castro_category(html, gender):
         print("product:", prod['href'])
         prod = CastroProduct(prod['href'], gender)
         products.append(prod)
-        
+
     return products
 
 
@@ -88,7 +88,7 @@ def scrape_castro(save_path):
     products = []
     # TODO: for some reason, returned html is not good when
     # there are more pending requests than #CPUs. fix this.
-    N_THREADS = 1
+    N_THREADS = 8
     pool = Pool(N_THREADS)
     results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender) for gender in categories.keys() for category_url in categories[gender]])
     print(results)

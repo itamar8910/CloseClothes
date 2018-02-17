@@ -30,17 +30,29 @@ class ScrapeProduct(ABC):
     def scrape(self):
         "scrapes prodcut page and sets properties"
         # set up the soup object for the child
-        self.soup = BeautifulSoup(self.load_html(), 'html.parser')
+        N_RETRIES = 3
+        for i in range(N_RETRIES):
+            try:
+                self.soup = BeautifulSoup(self.load_html(), 'html.parser')
+                self.name = self.scrape_name()
+                self.brand = self.scrape_brand()
+                self.color = self.scrape_color()
+                self.description = self.scrape_description()
+                self.imgs = self.scrape_imgs()
+                self.price = self.scrape_price()
+                self.sizes = self.scrape_sizes()
+                self.gender = self.scrape_gender()
 
-        self.name = self.scrape_name()
-        self.brand = self.scrape_brand()
-        self.color = self.scrape_color()
-        self.description = self.scrape_description()
-        self.imgs = self.scrape_imgs()
-        self.price = self.scrape_price()
-        self.sizes = self.scrape_sizes()
-        self.gender = self.scrape_gender()
-
+                break
+            except Exception as e:
+                print(e)
+                print("bad HTML, # retries: {} / {}".format(i+1, N_RETRIES))
+                #print(self.soup.text)
+                #raise e
+        if i >= N_RETRIES:
+            print("SCRAPE BAD, url:", self.url)
+        else:
+            print("SCRAPE GOOD")
     @abstractmethod
     def scrape_name(self):
         pass
