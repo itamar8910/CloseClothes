@@ -31,6 +31,7 @@ class ScrapeProduct(ABC):
         "scrapes prodcut page and sets properties"
         # set up the soup object for the child
         N_RETRIES = 3
+        success = False
         for i in range(N_RETRIES):
             try:
                 self.soup = BeautifulSoup(self.load_html(), 'html.parser')
@@ -42,14 +43,14 @@ class ScrapeProduct(ABC):
                 self.price = self.scrape_price()
                 self.sizes = self.scrape_sizes()
                 self.gender = self.scrape_gender()
-
+                success = True
                 break
             except Exception as e:
                 print(e)
                 print("bad HTML, # retries: {} / {}".format(i+1, N_RETRIES))
                 #print(self.soup.text)
                 #raise e
-        if i >= N_RETRIES:
+        if not success:
             print("SCRAPE BAD, url:", self.url)
         else:
             print("SCRAPE GOOD")

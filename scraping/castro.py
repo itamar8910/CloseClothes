@@ -8,6 +8,7 @@ from scraping.ScrapeProduct import ScrapeProduct
 from scraping.utils import get_html_with_js, get_html
 from multiprocessing.dummy import Pool  # This is a thread-based Pool
 from multiprocessing import cpu_count
+import pickle
 
 class CastroProduct(ScrapeProduct):
 
@@ -33,13 +34,14 @@ class CastroProduct(ScrapeProduct):
 
     def scrape_description(self):
         description_div = self.soup.find('div', attrs={'class': 'attr-description'})
-        desc = ""
-        try:
-            desc = description_div.next
-            desc += "\n".join(li.contents[0] for li in description_div.find('ul').findAll('li'))
-        except Exception:
-            desc = description_div.contents
-        return desc
+        return description_div.text
+        # desc = ""
+        # try:
+        #     desc = description_div.next
+        #     desc += "\n".join(li.contents[0].text for li in description_div.find('ul').findAll('li'))
+        # except Exception:
+        #     desc = description_div.contents
+        # return desc
 
     def scrape_imgs(self):
         return [a['rev'][0] for a in self.soup.findAll('a', attrs={'class': 'MagicThumb-swap'})]
@@ -95,7 +97,8 @@ def scrape_castro(save_path):
     scrapes = []
     for res in results:
         scrapes.extend(res)
-
+    # with open('castro_save.p', 'wb') as f:
+    #     pickle.dump(scrapes, f)
     ScrapeProduct.json_from_scrapes(save_path, scrapes)
 
 
