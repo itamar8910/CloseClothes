@@ -42,24 +42,31 @@ def train(train_data_dir, validation_data_dir, save_path = 'tmp_save',NUM_CLASSE
     # set the first 25 layers (up to the last conv block)
     # to non-trainable (weights will not be updated)
     print(len(model.layers))
-    for layer in model.layers[:19]:
+    for layer in model.layers[:15]:
         layer.trainable = False
-
+    
     # compile the model with a SGD/momentum optimizer
     # and a very slow learning rate.
     model.compile(loss='categorical_crossentropy',
                 optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                 metrics=['accuracy'])
     model.summary()
-    
+    exit()
     # prepare data augmentation configuration
-    train_datagen = ImageDataGenerator(
-        rescale=1. / 255,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True)
+    # train_datagen = ImageDataGenerator(
+    #     rescale=1. / 255,
+    #     shear_range=0.2,
+    #     zoom_range=0.2,
+    #     horizontal_flip=True)
 
-    test_datagen = ImageDataGenerator(rescale=1. / 255)
+    # test_datagen = ImageDataGenerator(rescale=1. / 255)
+
+    train_datagen = ImageDataGenerator(featurewise_center=True)
+
+    test_datagen = ImageDataGenerator(featurewise_center=True)
+
+    train_datagen.mean=np.array([103.939, 116.779, 123.68],dtype=np.float32).reshape(1,1,3)
+    test_datagen.mean=np.array([103.939, 116.779, 123.68],dtype=np.float32).reshape(1,1,3)
 
     train_generator = train_datagen.flow_from_directory(
         train_data_dir,
