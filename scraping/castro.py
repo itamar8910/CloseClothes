@@ -1,9 +1,13 @@
+import json
+
 import requests
 from bs4 import BeautifulSoup
 import dryscrape
 
 from scraping.ScrapeProduct import ScrapeProduct
-from scraping.utils import get_html_with_js
+from scraping.utils import get_html_with_js, get_html
+from multiprocessing.dummy import Pool  # This is a thread-based Pool
+from multiprocessing import cpu_count
 
 class CastroProduct(ScrapeProduct):
 
@@ -29,8 +33,12 @@ class CastroProduct(ScrapeProduct):
 
     def scrape_description(self):
         description_div = self.soup.find('div', attrs={'class': 'attr-description'})
-        desc = description_div.next
-        desc += "\n".join(li.contents[0] for li in description_div.find('ul').findAll('li'))
+        desc = ""
+        try:
+            desc = description_div.next
+            desc += "\n".join(li.contents[0] for li in description_div.find('ul').findAll('li'))
+        except Exception:
+            desc = description_div.contents
         return desc
 
     def scrape_imgs(self):
@@ -42,29 +50,56 @@ class CastroProduct(ScrapeProduct):
     def scrape_gender(self):
         return self.gender
 
-
-
-def get_html(url):
-    return (requests.get(url).text)
-
-
-
-def get_prod_data(prod_html):
-    pass
-    
-
-def scrape_castro(html):
+def scrape_castro_category(html, gender):
     soup = BeautifulSoup(html, 'html.parser')
     data = soup.findAll('a',attrs={'class':'product-image'})
+    products = []
     for prod in data:
         print("product:", prod['href'])
-        prod = CastroProduct(prod['href'], 'Male')
-        print(prod.to_json())
-        exit()
+        prod = CastroProduct(prod['href'], gender)
+        products.append(prod)
+        break
+    return products
+
+
+
+def scrape_castro(save_path):
+    categories = {
+        'Male':[
+            'https://www.castro.com/he/MEN/T-shirts.html',
+            'https://www.castro.com/he/MEN/Jumpers.html',
+            'https://www.castro.com/he/MEN/Knits.html',
+            'https://www.castro.com/he/MEN/Coats.html',
+            'https://www.castro.com/he/MEN/Shirts.html',
+            'https://www.castro.com/he/MEN/Polo-Shirts.html',
+            'https://www.castro.com/he/catalog/category/view/id/1820',
+            'https://www.castro.com/he/MEN/Tank-tops.html',
+        ],
+        'Female':[
+            'https://www.castro.com/he/WOMEN/Dresses.html',
+            'https://www.castro.com/he/WOMEN/Tops.html',
+            'https://www.castro.com/he/WOMEN/Knits.html',
+            'https://www.castro.com/he/WOMEN/Jumpers.html',
+            'https://www.castro.com/he/WOMEN/Blazers.html',
+            'https://www.castro.com/he/WOMEN/Coats.html',
+            'https://www.castro.com/he/WOMEN/Jumpsuits.html',
+        ]
+    }
+    products = []
+    # TODO: for some reason, returned html is not good when
+    # there are more pending requests than #CPUs. fix this.
+    N_THREADS = 1
+    pool = Pool(N_THREADS)
+    results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender) for gender in categories.keys() for category_url in categories[gender]])
+    print(results)
+    scrapes = []
+    for res in results:
+        scrapes.extend(res)
+
+    ScrapeProduct.json_from_scrapes(save_path, scrapes)
+
 
 if __name__ == "__main__":
-    html = get_html('https://www.castro.com/he/MEN/Jumpers.html')
-    scrape_castro(html)
-    # with open('scraping/prod_html.html', 'r') as f:
-    #     get_prod_data(f.read())
+    scrape_castro('castro.json')
+
  

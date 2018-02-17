@@ -146,9 +146,10 @@ class ScrapeProduct(ABC):
     def to_json(self):
         return json.dumps(self.properties())
 
+
     @staticmethod
     def json_from_scrapes(path, scrapes):
         with open(path, 'w') as fp:
-            json.dump(fp, [scrape.to_json() for scrape in scrapes])
-
+            json_str = json.dumps([scrape.properties() for scrape in scrapes], indent=2)
+            fp.write(json_str)
 
