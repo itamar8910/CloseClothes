@@ -58,7 +58,7 @@ def scrape_castro_category(html, gender):
         print("product:", prod['href'])
         prod = CastroProduct(prod['href'], gender)
         products.append(prod)
-        break
+        
     return products
 
 
