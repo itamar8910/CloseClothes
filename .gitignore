@@ -17,3 +17,5 @@ venv/
 **/*.html
 classification/*.json
 **/clf_model.json
+/bashvenv
+/.vscode

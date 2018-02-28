@@ -7,18 +7,15 @@ import utils
 class ScrapeProduct(ABC):
     def __init__(self, url):
         self.url = url
-        self._name = None
-        self._brand = None
-        self._color = None
-        self._description = None
-        self._imgs = None
-        self._price = None
-        self._sizes = None
-        self._gender = None
+        self.name = None
+        self.brand = None
+        self.color = None
+        self.description = None
+        self.imgs = None
+        self.price = None
+        self.sizes = None
+        self.gender = None
         self.scrape()
-
-    def url(self):
-        return self.url
 
     @abstractmethod
     def load_html(self):
@@ -54,6 +51,7 @@ class ScrapeProduct(ABC):
             print("SCRAPE BAD, url:", self.url)
         else:
             print("SCRAPE GOOD")
+
     @abstractmethod
     def scrape_name(self):
         pass
@@ -86,74 +84,9 @@ class ScrapeProduct(ABC):
     def scrape_gender(self):
         pass
 
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, val):
-        self._name = val
-
-    @property
-    def brand(self):
-        return self._brand
-
-    @brand.setter
-    def brand(self, val):
-        self._brand = val
-
-    @property
-    def price(self):
-        return self._price
-
-    @price.setter
-    def price(self, val):
-        self._price = val
-
-    @property
-    def sizes(self):
-        return self._sizes
-
-    @sizes.setter
-    def sizes(self, val):
-        self._sizes = val
-
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, val):
-        self._description = val
-
-
-    @property
-    def color(self):
-        return self._color
-
-    @color.setter
-    def color(self, val):
-        self._color = val
-
-    @property
-    def imgs(self):
-        return self._imgs
-    @imgs.setter
-    def imgs(self, val):
-        self._imgs = val
-
-    @property
-    def gender(self):
-        return self._gender
-
-    @gender.setter
-    def gender(self, val):
-        self._gender = val
-
     def properties(self):
         all_vars = vars(self)
-        all_vars.pop('soup', None)
+        all_vars.pop('soup')
         return all_vars
 
     def to_json(self):

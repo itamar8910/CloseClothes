@@ -1,13 +1,10 @@
 import requests
-import click
-from AdvancedHTMLParser import IndexedAdvancedHTMLParser
-import dryscrape
+try:
+    import dryscrape
+except ImportError:
+    print("Dryscrape not installed") #for work on windows
 import time
-@click.command()
-@click.argument("url")
-def page_html_cmd(url):
-    return (requests.get(url).text)
-
+from bs4 import BeautifulSoup
 
 def get_html(url):
     return (requests.get(url).text)
@@ -19,12 +16,3 @@ def get_html_with_js(url):
     session.visit(url)
     print(time.time() - t1)
     return session.body()
-
-def document(url):
-    parser = IndexedAdvancedHTMLParser()
-    parser.parseStr(get_html(url))
-    return parser
-
-
-if __name__ == '__main__':
-    page_html_cmd()
