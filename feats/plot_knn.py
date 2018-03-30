@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from closest_feat import get_KNN
 from operator import itemgetter
