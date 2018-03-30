@@ -13,7 +13,6 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.PendingIntent.getActivity
 import android.os.Build
 import android.support.v4.app.ActivityCompat
-import pub.devrel.easypermissions.EasyPermissions
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
 

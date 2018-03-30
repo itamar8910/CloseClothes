@@ -84,9 +84,9 @@ class CameraActivity : AppCompatActivity() {
 
     private fun sendImageToServer(imageBitmap: Bitmap) {
         thread(){
-            var correctSize = Bitmap.createScaledBitmap(imageBitmap, 150, 150, false);
+            var correctSize = Bitmap.createScaledBitmap(imageBitmap, 300, 300, false);
             var stream = ByteArrayOutputStream()
-            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            correctSize.compress(Bitmap.CompressFormat.PNG, 100, stream)
             var byteArray = stream.toByteArray()
             val socketWrapper = SocketWrapper()
             Log.i(MainActivity::TAG.toString(), "image bytes size:" + byteArray.size)
