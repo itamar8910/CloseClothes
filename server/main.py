@@ -1,9 +1,12 @@
+import sys
+sys.path.append("..")
 import socket
 from threading import Thread
 from struct import pack,unpack
 from PIL import Image
 import io
-
+from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
+import numpy as np
 SOCKET_SIZE = 10
 PORT = 8080
 
@@ -14,6 +17,7 @@ def main():
     sever_socket.listen(SOCKET_SIZE)
     running = True
     while running:
+        print("waiting for connection")
         client_socket, client_address = sever_socket.accept()
         client_thread = Thread(target=handle_client,args=(client_socket,))
         client_thread.start()
@@ -40,7 +44,13 @@ def handle_client(client_socket):
     image_bytes = read_socket_bytes(image_size)
     print(type(image_bytes))
     print(len(image_bytes))
-    Image.open(io.BytesIO(image_bytes)).show()
+    img = Image.open(io.BytesIO(image_bytes))
+    img.show()
+    
+    upperbody_bbox = get_uperbody_bbox_from_npy(np.array(img))
+    print(upperbody_bbox)
+    img_upperbody = img.crop(upperbody_bbox)
+    img_upperbody.show()
 
 if __name__ == '__main__':
     main()
