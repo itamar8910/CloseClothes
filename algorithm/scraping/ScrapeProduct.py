@@ -20,7 +20,7 @@ class ScrapeProduct(ABC):
     @abstractmethod
     def load_html(self):
         "returns html of product url"
-        # This may by implemented by either requests or dryscrape,
+        # This may be implemented by either requests or dryscrape,
         # so better leave the decision to the children
         pass
 

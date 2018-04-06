@@ -4,11 +4,15 @@ import requests
 from bs4 import BeautifulSoup
 import dryscrape
 
-from scraping.ScrapeProduct import ScrapeProduct
-from scraping.utils import get_html_with_js, get_html
+from ScrapeProduct import ScrapeProduct
+from utils import get_html_selenium, get_html
 from multiprocessing.dummy import Pool  # This is a thread-based Pool
 from multiprocessing import cpu_count
 import pickle
+from algorithm.scraping.utils import get_html_selenium
+
+N_PRODUCTS = 0
+N_SCRAPED = 0
 
 class CastroProduct(ScrapeProduct):
 
@@ -17,7 +21,8 @@ class CastroProduct(ScrapeProduct):
         self.gender = gender
 
     def load_html(self):
-        return get_html_with_js(self.url)
+        # return get_html_with_js(self.url)
+        return get_html_selenium(self.url, verbose=True)
 
     def scrape_name(self):
         return self.soup.find('div', attrs={'class': 'name'}).find('h1').contents[0]
@@ -52,15 +57,20 @@ class CastroProduct(ScrapeProduct):
     def scrape_gender(self):
         return self.gender
 
-def scrape_castro_category(html, gender):
+def scrape_castro_category(html, gender, category_url = "N/A"):
+    global N_PRODUCTS, N_SCRAPED
+    print("starting category:", category_url)
     soup = BeautifulSoup(html, 'html.parser')
     data = soup.findAll('a',attrs={'class':'product-image'})
+    N_PRODUCTS += len(list(data))
     products = []
-    for prod in data:
-        print("product:", prod['href'])
+    for prod_i, prod in enumerate(data):
+        print("product:", prod['href'], "{}/{}".format(N_SCRAPED, N_PRODUCTS))
+        N_SCRAPED += 1
         prod = CastroProduct(prod['href'], gender)
         products.append(prod)
 
+    print("Finished category:", category_url)
     return products
 
 
@@ -92,7 +102,7 @@ def scrape_castro(save_path):
     # there are more pending requests than #CPUs. fix this.
     N_THREADS = 8
     pool = Pool(N_THREADS)
-    results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender) for gender in categories.keys() for category_url in categories[gender]])
+    results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender, category_url) for gender in categories.keys() for category_url in categories[gender]])
     print(results)
     scrapes = []
     for res in results:
