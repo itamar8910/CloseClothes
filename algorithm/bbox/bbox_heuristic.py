@@ -28,9 +28,12 @@ def draw_bboxes(img_path, bboxes):
 def get_upperbody_bbox(img_path, w_face_bbox=False):
     # Load the jpg file into a numpy array
     img1 = face_recognition.load_image_file(img_path)
+    return get_uperbody_bbox_from_npy(img1, w_face_bbox=w_face_bbox)
 
-    face_locations = face_recognition.face_locations(img1)
+def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
+    face_locations = face_recognition.face_locations(img_npy)
     if len(face_locations) == 0:
+        print("NO FACES DETECTED")
         return None
     if len(face_locations) > 1:
         print("WARNING: More than one person detected, currently only supoorts one person oer image")
@@ -41,7 +44,7 @@ def get_upperbody_bbox(img_path, w_face_bbox=False):
     print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
     
     face_bbox = (left, top, right-left, bottom-top) # x y w h
-    upperbody_bbox = face_to_upperbody(img1.shape, *face_bbox) # x y w h
+    upperbody_bbox = face_to_upperbody(img_npy.shape, *face_bbox) # x y w h
     if w_face_bbox:
         return face_bbox, upperbody_bbox
     return upperbody_bbox
@@ -49,6 +52,8 @@ def get_upperbody_bbox(img_path, w_face_bbox=False):
 def draw_upperbody_bbox(img_path):
     face_bbox, upperbody_bbox = get_upperbody_bbox(img_path, w_face_bbox=True)
     draw_bboxes(img_path, [face_bbox, upperbody_bbox])
+
+
 
 if __name__ == "__main__":
     import sys

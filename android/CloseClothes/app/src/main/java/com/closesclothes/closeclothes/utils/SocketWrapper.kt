@@ -18,7 +18,9 @@ class SocketWrapper {
 
     private var socket: Socket? = null
 
-    private val IP = "192.168.0.105" // server's ip
+//    private val IP = "192.168.0.105" // server's ip
+    private val IP = "192.168.0.108" // server's ip
+
 
     init {
         try {
