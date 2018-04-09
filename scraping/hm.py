@@ -16,8 +16,8 @@ N_SCRAPED = 0
 
 # TODO: H&M products have multiple color versions, this onyl scrapes the default one
 class HMProduct(ScrapeProduct):
-    def __init__(self, url, gender):
-        super().__init__(url)
+    def __init__(self, url, gender, soup=None):
+        super().__init__(url, soup=soup)
         self.gender = gender
 
     def load_html(self):
@@ -48,23 +48,40 @@ class HMProduct(ScrapeProduct):
 
     def scrape_gender(self):
         return self.gender
-#
-#
-# def scrape_castro_category(html, gender, category_url="N/A"):
-#     global N_PRODUCTS, N_SCRAPED
-#     print("starting category:", category_url)
-#     soup = BeautifulSoup(html, 'html.parser')
-#     data = soup.findAll('a', attrs={'class': 'product-image'})
-#     N_PRODUCTS += len(list(data))
-#     products = []
-#     for prod_i, prod in enumerate(data):
-#         print("product:", prod['href'], "{}/{}".format(N_SCRAPED, N_PRODUCTS))
-#         N_SCRAPED += 1
-#         prod = CastroProduct(prod['href'], gender)
-#         products.append(prod)
-#
-#     print("Finished category:", category_url)
-#     return products
+
+def get_all_color_variants_url_of_product(prod_soup, prod_url):
+    prod_base_url = prod_url[:prod_url.index('?article=')]
+    return [prod_base_url + color_prod.find('a')['href'] for color_prod in prod_soup.find('ul', attrs={'id':'options-articles'}).findAll('li')]
+
+
+def scrape_castro_category(html, gender, category_url="N/A"):
+    global N_PRODUCTS, N_SCRAPED
+    print("starting category:", category_url)
+    soup = BeautifulSoup(html, 'html.parser')
+    data = soup.findAll('a', attrs={'class': 'product-url js-product-tracking js-product-tracking-initialized'})
+    products = []
+    for prod_box in data:
+        prod_soup = BeautifulSoup(get_html_selenium(prod_box['href']), 'html.parser')
+        prod_colors_urls = get_all_color_variants_url_of_product(prod_soup, prod_box['href'])
+        print(prod_colors_urls)
+        for prod_color_url in prod_colors_urls:
+            products.append(
+                {'url': prod_color_url,
+                 'soup': prod_soup if prod_color_url != prod_box['href'] else None}
+            )
+    print("# of items:", len(products))
+
+    N_PRODUCTS += len(list(products))
+    products = []
+    for prod_i, prod in enumerate(products):
+        print("product:", prod['url'], "{}/{}".format(N_SCRAPED, N_PRODUCTS))
+        prod_soup = prod['soup'] if prod['soup'] else BeautifulSoup(get_html_selenium(prod['url']), 'html.parser')
+        N_SCRAPED += 1
+        prod = HMProduct(prod['href'], gender, soup=prod_soup)
+        products.append(prod)
+
+    print("Finished category:", category_url)
+    return products
 #
 #
 # def scrape_castro(save_path):
@@ -105,6 +122,15 @@ class HMProduct(ScrapeProduct):
 
 
 if __name__ == "__main__":
+    print(HMProduct('http://www.hm.com/il/product/94016?article=94016-M', 'male'))
+    exit()
+    # url = 'http://www.hm.com/il/product/92328?article=92328-F'
+    # soup = BeautifulSoup(get_html_selenium(url), 'html.parser')
+    # print(get_all_color_variants_url_of_product(soup, url))
+    # exit()
+    category_url = 'http://www.hm.com/il/products/men/tshirt'
+    # category_url += '?page=100' # to auto-load all items
+    scrape_castro_category(get_html_selenium(category_url), 'male', category_url)
     # print(HMProduct('http://www.hm.com/il/product/83134?article=83134-A', 'male'))
-    print(HMProduct('http://www.hm.com/il/product/96562?article=96562-E', 'male'))
+    #print(HMProduct('http://www.hm.com/il/product/96562?article=96562-E', 'male'))
     # print(HMProduct('http://www.hm.com/il/product/00566?article=00566-B', 'male'))
