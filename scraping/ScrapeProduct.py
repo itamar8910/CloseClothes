@@ -95,7 +95,7 @@ class ScrapeProduct(ABC):
     @classmethod
     def scrape_category(cls,category_url,gender):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            category_html = utils.get_html(category_url)
+            category_html = utils.get_html_selenium(category_url)
             product_urls = cls.scrape_product_urls(category_html,gender)
             products = [product for product in executor.map(lambda url:cls(url,gender),product_urls)] #have to iterate over executor.map while inside the "with" scope
         return products
