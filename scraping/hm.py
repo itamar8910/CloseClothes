@@ -13,7 +13,6 @@ from utils import get_html_selenium
 N_PRODUCTS = 0
 N_SCRAPED = 0
 
-# TODO: H&M products have multiple color versions, this onyl scrapes the default one
 class HMProduct(ScrapeProduct):
     def __init__(self, url, gender, soup=None):
         super().__init__(url, soup=soup)
