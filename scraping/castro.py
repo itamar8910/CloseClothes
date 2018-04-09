@@ -41,6 +41,7 @@ class CastroProduct(ScrapeProduct):
         description_div = self.soup.find('div', attrs={'class': 'attr-description'})
         return description_div.text
 
+
     def scrape_imgs(self):
         return [a['rev'][0] for a in self.soup.findAll('a', attrs={'class': 'MagicThumb-swap'})]
 
