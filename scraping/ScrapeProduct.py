@@ -15,6 +15,7 @@ class ScrapeProduct(ABC):
         self.price = None
         self.sizes = None
         self.gender = None
+        self.soup = None
         self.scrape()
 
     @abstractmethod
@@ -99,3 +100,6 @@ class ScrapeProduct(ABC):
             json_str = json.dumps([scrape.properties() for scrape in scrapes], indent=2)
             fp.write(json_str)
 
+
+    def __str__(self):
+        return str(self.to_json())
