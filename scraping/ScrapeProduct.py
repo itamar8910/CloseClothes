@@ -5,7 +5,7 @@ import utils
 
 
 class ScrapeProduct(ABC):
-    def __init__(self, url):
+    def __init__(self, url, soup = None):
         self.url = url
         self.name = None
         self.brand = None
@@ -15,7 +15,7 @@ class ScrapeProduct(ABC):
         self.price = None
         self.sizes = None
         self.gender = None
-        self.soup = None
+        self.soup = soup
         self.scrape()
 
     @abstractmethod
@@ -32,7 +32,8 @@ class ScrapeProduct(ABC):
         success = False
         for i in range(N_RETRIES):
             try:
-                self.soup = BeautifulSoup(self.load_html(), 'html.parser')
+                if self.soup is None:
+                    self.soup = BeautifulSoup(self.load_html(), 'html.parser')
                 self.name = self.scrape_name()
                 self.brand = self.scrape_brand()
                 self.color = self.scrape_color()
