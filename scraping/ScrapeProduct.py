@@ -2,7 +2,8 @@ from abc import ABC, abstractproperty, abstractmethod
 import json
 from bs4 import BeautifulSoup
 import utils
-
+import concurrent.futures
+from functools import partial
 
 class ScrapeProduct(ABC):
     def __init__(self, url, soup = None):
@@ -86,6 +87,20 @@ class ScrapeProduct(ABC):
     def scrape_gender(self):
         pass
 
+    @staticmethod
+    @abstractmethod
+    def scrape_product_urls(category_url,gender):
+        pass
+
+    @classmethod
+    def scrape_category(cls,category_url,gender):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            category_html = utils.get_html(category_url)
+            product_urls = cls.scrape_product_urls(category_html,gender)
+            products = [product for product in executor.map(lambda url:cls(url,gender),product_urls)] #have to iterate over executor.map while inside the "with" scope
+        return products
+
+
     def properties(self):
         all_vars = vars(self)
         all_vars.pop('soup')
@@ -104,3 +119,26 @@ class ScrapeProduct(ABC):
 
     def __str__(self):
         return str(self.to_json())
+    
+    def __repr__(self):
+        return str(self.to_json())
+
+    @classmethod
+    def scrape_whole_brand(cls,category_url_dict_by_gender,save_path):
+        """ 
+
+        scrape all of the brand  
+
+
+        :param cls: given  
+        :param category_url_dict_by_gender: dict of shape {gender:category_urls}
+        :param save_path: path to save json in
+        """
+        #category_url_dict_by_gender = ['men':]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for gender,category_url_list in category_url_dict_by_gender.items():
+                flattened_scrapes  = list()
+                for scrape in executor.map(lambda category_url:cls.scrape_category(gender=gender,category_url=category_url),category_url_list):
+                    flattened_scrapes.extend(scrape)
+
+        ScrapeProduct.json_from_scrapes(save_path,flattened_scrapes) 

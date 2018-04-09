@@ -2,14 +2,13 @@ import json
 
 import requests
 from bs4 import BeautifulSoup
-import dryscrape
 
 from ScrapeProduct import ScrapeProduct
 from utils import get_html_selenium, get_html
 from multiprocessing.dummy import Pool  # This is a thread-based Pool
 from multiprocessing import cpu_count
 import pickle
-from algorithm.scraping.utils import get_html_selenium
+from utils import get_html_selenium
 
 N_PRODUCTS = 0
 N_SCRAPED = 0
@@ -51,25 +50,13 @@ class CastroProduct(ScrapeProduct):
     def scrape_gender(self):
         return self.gender
 
-def scrape_castro_category(html, gender, category_url = "N/A"):
-    global N_PRODUCTS, N_SCRAPED
-    print("starting category:", category_url)
-    soup = BeautifulSoup(html, 'html.parser')
-    data = soup.findAll('a',attrs={'class':'product-image'})
-    N_PRODUCTS += len(list(data))
-    products = []
-    for prod_i, prod in enumerate(data):
-        print("product:", prod['href'], "{}/{}".format(N_SCRAPED, N_PRODUCTS))
-        N_SCRAPED += 1
-        prod = CastroProduct(prod['href'], gender)
-        products.append(prod)
-
-    print("Finished category:", category_url)
-    return products
+    def scrape_product_urls(html, gender):
+        soup = BeautifulSoup(html, 'html.parser')
+        data = soup.findAll('a',attrs={'class':'product-image'})
+        return [prod['href'] for prod in data]
 
 
-
-def scrape_castro(save_path):
+if __name__ == "__main__":
     categories = {
         'Male':[
             'https://www.castro.com/he/MEN/T-shirts.html',
@@ -91,20 +78,6 @@ def scrape_castro(save_path):
             'https://www.castro.com/he/WOMEN/Jumpsuits.html',
         ]
     }
-    products = []
-    N_THREADS = 8
-    pool = Pool(N_THREADS)
-    results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender, category_url) for gender in categories.keys() for category_url in categories[gender]])
-    print(results)
-    scrapes = []
-    for res in results:
-        scrapes.extend(res)
-    # with open('castro_save.p', 'wb') as f:
-    #     pickle.dump(scrapes, f)
-    ScrapeProduct.json_from_scrapes(save_path, scrapes)
-
-
-if __name__ == "__main__":
-    scrape_castro('castro.json')
+    CastroProduct.scrape_whole_brand(categories,'castro.json')
 
  
