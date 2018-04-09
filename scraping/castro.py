@@ -40,13 +40,6 @@ class CastroProduct(ScrapeProduct):
     def scrape_description(self):
         description_div = self.soup.find('div', attrs={'class': 'attr-description'})
         return description_div.text
-        # desc = ""
-        # try:
-        #     desc = description_div.next
-        #     desc += "\n".join(li.contents[0].text for li in description_div.find('ul').findAll('li'))
-        # except Exception:
-        #     desc = description_div.contents
-        # return desc
 
     def scrape_imgs(self):
         return [a['rev'][0] for a in self.soup.findAll('a', attrs={'class': 'MagicThumb-swap'})]
@@ -98,8 +91,6 @@ def scrape_castro(save_path):
         ]
     }
     products = []
-    # TODO: for some reason, returned html is not good when
-    # there are more pending requests than #CPUs. fix this.
     N_THREADS = 8
     pool = Pool(N_THREADS)
     results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender, category_url) for gender in categories.keys() for category_url in categories[gender]])
