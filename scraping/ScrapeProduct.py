@@ -89,22 +89,20 @@ class ScrapeProduct(ABC):
 
     @staticmethod
     @abstractmethod
-    def scrape_product_urls(category_url,gender):
+    def scrape_product_urls(category_url):
         pass
 
     @classmethod
     def scrape_category(cls,category_url,gender):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             category_html = utils.get_html_selenium(category_url)
-            product_urls = cls.scrape_product_urls(category_html,gender)
+            product_urls = cls.scrape_product_urls(category_html)
             products = [product for product in executor.map(lambda url:cls(url,gender),product_urls)] #have to iterate over executor.map while inside the "with" scope
         return products
 
 
     def properties(self):
-        all_vars = vars(self)
-        all_vars.pop('soup')
-        return all_vars
+        return {key:value for key,value in vars(self).items() if key != 'soup'}
 
     def to_json(self):
         return json.dumps(self.properties())

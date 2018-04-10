@@ -19,3 +19,4 @@ classification/*.json
 **/clf_model.json
 /bashvenv
 /.vscode
+*.log

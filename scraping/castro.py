@@ -50,7 +50,7 @@ class CastroProduct(ScrapeProduct):
     def scrape_gender(self):
         return self.gender
 
-    def scrape_product_urls(html, gender):
+    def scrape_product_urls(html):
         soup = BeautifulSoup(html, 'html.parser')
         data = soup.findAll('a',attrs={'class':'product-image'})
         return [prod['href'] for prod in data]
