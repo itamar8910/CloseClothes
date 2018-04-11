@@ -20,3 +20,4 @@ classification/*.json
 /bashvenv
 /.vscode
 *.log
+*.json
