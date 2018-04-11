@@ -1,7 +1,7 @@
 from tinydb import TinyDB, Query
 from BaseDB import BaseDB
-from typing import Dict
-
+from typing import Dict, List
+import numpy as np
 
 
 class TinyDB_DB(BaseDB):
@@ -24,6 +24,14 @@ class TinyDB_DB(BaseDB):
         results = self.db.search(q_get.url == url)
         assert len(results) == 1
         return results[0]
+    
+    def update_feats(self, url : str, feats: List[np.ndarray]):
+        q_update = Query()
+        self.db.update({'feats':feats}, q_update.url == url)
+
+
+    def get_all(self):
+        return self.db.all()
 
 
 

@@ -9,11 +9,14 @@ class FeatsExtractor:
         # child will load model
         pass
 
-    def get_feats(self, imgs_paths : List[str]) -> List[np.ndarray]:     
+    def get_feats(self, imgs_paths : List[str or Image]) -> List[np.ndarray]:     
         imgs_raw = []
         for img_path in imgs_paths:
-                img = Image.open(img_path)
-                img.load()
+                if  type(img_path) is str: # given path
+                    img = Image.open(img_path)
+                    img.load()
+                else: # given PIL Image
+                    img = img_path
                 img = img.resize(self.get_tar_img_shape())
                 imgs_raw.append(self.preprocess_input(np.asarray(img)))
 

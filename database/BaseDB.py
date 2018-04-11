@@ -1,5 +1,6 @@
-from typing import Dict
+from typing import Dict, List
 import json
+import numpy as np
 
 class BaseDB:
 
@@ -15,6 +16,12 @@ class BaseDB:
     def get_by_url(self, url : str) -> Dict:
         raise NotImplementedError
     
+    def update_feats(self, url : str, feats: List[np.ndarray]):
+        raise NotImplementedError
+
+    def get_all(self):
+        raise NotImplementedError
+
     @classmethod
     def from_json(cls, db_path, *json_paths):
         db = cls(db_path)
