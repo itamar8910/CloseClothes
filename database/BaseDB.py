@@ -1,29 +1,45 @@
 from typing import Dict, List
 import json
 import numpy as np
+import abc
+from algorithm.feats.FeatsExtractor import FeatsExtractor
 
-class BaseDB:
+class BaseDB(abc.ABC):
 
     def __init__(self, path):
         self._path = path
 
+    @abc.abstractmethod
     def add_item(self, url : str, item : Dict) -> Dict:
-        raise NotImplementedError
+        ...
         
+    @abc.abstractmethod
     def remove_item(self, url : str):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_by_url(self, url : str) -> Dict:
-        raise NotImplementedError
+        ...
     
+    @abc.abstractmethod
     def update_feats(self, url : str, feats: List[np.ndarray]):
-        raise NotImplementedError
+        ...
+    
+    @property
+    @abc.abstractmethod
+    def feat_extractor(self) -> FeatsExtractor:
+        ...
+    
+    def update_all_feats(self):
+        for item in self.get_all():
+            item_feats = self.feat_extractor.get_feats(item['imgs'])
+            self.update_feats(item['url'],item_feats)
 
     def get_all(self):
-        raise NotImplementedError
+        ...
 
     @classmethod
-    def from_json(cls, db_path, *json_paths):
+    def init_from_json(cls, db_path, *json_paths):
         db = cls(db_path)
         for json_path in json_paths:
             print(json_path)

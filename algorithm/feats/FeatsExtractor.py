@@ -1,7 +1,7 @@
-from PIL import Image
 import numpy as np
 from typing import List, Tuple
 from keras import applications
+import imageio
 
 class FeatsExtractor:
 
@@ -9,18 +9,8 @@ class FeatsExtractor:
         # child will load model
         pass
 
-    def get_feats(self, imgs_paths : List[str or Image]) -> List[np.ndarray]:     
-        imgs_raw = []
-        for img_path in imgs_paths:
-                if  type(img_path) is str: # given path
-                    img = Image.open(img_path)
-                    img.load()
-                else: # given PIL Image
-                    img = img_path
-                img = img.resize(self.get_tar_img_shape())
-                imgs_raw.append(self.preprocess_input(np.asarray(img)))
-
-        return self.get_feats_raw(np.array(imgs_raw))
+    def get_feats(self, imgs_paths : List[str]) -> List[np.ndarray]:
+        return self.get_feats_raw(np.array([imageio.imread(path) for path in imgs_paths]))
 
     def get_feats_raw(self, img_array : np.ndarray) -> np.ndarray:
         "extract feats for a single image, given as a numpy array"
@@ -52,7 +42,6 @@ class VGG_FeatsExtractor(FeatsExtractor):
 
     def get_feats_raw(self, imgs_arrays : np.ndarray) -> np.ndarray:
         return [x.flatten() for x in self.model.predict(imgs_arrays)]
-        
 
     def get_tar_img_shape(self) -> Tuple[int, int]:
         return (VGG_FeatsExtractor.IMG_WIDTH, VGG_FeatsExtractor.IMG_HEIGHT)

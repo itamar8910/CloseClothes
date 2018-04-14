@@ -1,16 +1,17 @@
 from tinydb import TinyDB, Query
-from BaseDB import BaseDB
+from database.BaseDB import BaseDB
 from typing import Dict, List
 import numpy as np
+from algorithm.feats.FeatsExtractor import VGG_FeatsExtractor
 
-
+TINYDB_PATH = 'database/items_tinydb.json'
 class TinyDB_DB(BaseDB):
     
-    PATH = 'database/items_tinydb.json'
     
-    def __init__(self, path):
+    def __init__(self, path=TINYDB_PATH):
         super().__init__(path)
         self.db = TinyDB(self._path)
+        self.__feat_extractor = VGG_FeatsExtractor()
 
     def add_item(self, url : str, item : Dict) -> Dict:
         self.db.insert({**item,  **{'url': url}})
@@ -27,8 +28,15 @@ class TinyDB_DB(BaseDB):
     
     def update_feats(self, url : str, feats: List[np.ndarray]):
         q_update = Query()
+        feats = [list(feat) for feat in feats] # ndarray is not json-serializeable
+        for feat in feats:
+            for index,item in enumerate(feat):
+                feat[index] = str(item) # floats are not json-serializeable
         self.db.update({'feats':feats}, q_update.url == url)
-
+    
+    @property
+    def feat_extractor(self):
+        return self.__feat_extractor
 
     def get_all(self):
         return self.db.all()

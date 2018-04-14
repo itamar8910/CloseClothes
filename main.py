@@ -1,2 +1,3 @@
-from server.server_main import main
-main()
+from database.TinyDB_DB import TinyDB_DB
+tiny = TinyDB_DB('tinydb.json')
+tiny.update_all_feats()
