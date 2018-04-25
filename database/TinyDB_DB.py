@@ -3,15 +3,29 @@ from database.BaseDB import BaseDB
 from typing import Dict, List
 import numpy as np
 from algorithm.feats.FeatsExtractor import VGG_FeatsExtractor
+from sklearn.neighbors import NearestNeighbors
 
 TINYDB_PATH = 'database/items_tinydb.json'
 class TinyDB_DB(BaseDB):
-    
-    
+
     def __init__(self, path=TINYDB_PATH):
         super().__init__(path)
         self.db = TinyDB(self._path)
         self.__feat_extractor = VGG_FeatsExtractor()
+        self.__knn_clasifier = None
+
+    def init_knn(self):
+        clf = NearestNeighbors()
+        # TODO: run fit every time you the db changes
+        clf.fit(item['feats'] for item in self.get_all())
+        return clf
+
+    @property
+    def knn_clasifier(self) -> NearestNeighbors:
+        if not self.__knn_clasifier:
+            self.__feat_extractor = self.init_knn()
+        return self.__knn_clasifier
+    
 
     def add_item(self, url : str, item : Dict) -> Dict:
         self.db.insert({**item,  **{'url': url}})
@@ -40,6 +54,3 @@ class TinyDB_DB(BaseDB):
 
     def get_all(self):
         return self.db.all()
-
-
-

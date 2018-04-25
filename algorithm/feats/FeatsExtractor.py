@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Tuple
 from keras import applications
 import imageio
+from PIL.Image import Image
 
 class FeatsExtractor:
 
@@ -9,7 +10,7 @@ class FeatsExtractor:
         # child will load model
         pass
 
-    def get_feats(self, imgs_paths : List[str]) -> List[np.ndarray]:
+    def get_feats(self, imgs_paths : List[str or Image]) -> List[np.ndarray]:
         return self.get_feats_raw(np.array([imageio.imread(path) for path in imgs_paths]))
 
     def get_feats_raw(self, img_array : np.ndarray) -> np.ndarray:

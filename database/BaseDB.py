@@ -30,6 +30,20 @@ class BaseDB(abc.ABC):
     def feat_extractor(self) -> FeatsExtractor:
         ...
     
+    @property
+    @abc.abstractmethod
+    def knn_clasifier(self):  # lazily evaluate
+        ...
+
+    def knn(self, center: np.ndarray, num_neighbors: int) -> List[dict]:
+        """ given a "center" feature vectors, return the {num_neighbors} nearest items """
+        neighbor_indexes = self.knn_clasifier.kneighbors(
+            center, num_neighbors, return_distance=False)
+        all_items = self.get_all()
+        knn = [all_items[index] for index in neighbor_indexes]
+        assert len(knn) == num_neighbors
+        return knn
+
     def update_all_feats(self):
         for item in self.get_all():
             item_feats = self.feat_extractor.get_feats(item['imgs'])
