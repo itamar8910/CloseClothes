@@ -4,26 +4,35 @@ from typing import Dict, List
 import numpy as np
 from algorithm.feats.FeatsExtractor import VGG_FeatsExtractor
 from sklearn.neighbors import NearestNeighbors
-
+import pickle
 TINYDB_PATH = 'database/items_tinydb.json'
+KNN_PATH = 'database/data/knn_20180425.p'
+
 class TinyDB_DB(BaseDB):
 
-    def __init__(self, path=TINYDB_PATH):
+    def __init__(self, path=TINYDB_PATH, knn_path = KNN_PATH):
         super().__init__(path)
         self.db = TinyDB(self._path)
         self.__feat_extractor = VGG_FeatsExtractor()
-        self.__knn_clasifier = None
-
-    def init_knn(self):
+        try:        
+            with open(knn_path, 'rb') as f:
+                self.__knn_clasifier = pickle.load(f)
+        except FileNotFoundError:
+            self.__knn_clasifier = None
+        
+    def init_knn(self, save_path = None):
         clf = NearestNeighbors()
         # TODO: run fit every time you the db changes
         clf.fit(item['feats'] for item in self.get_all())
+        if save_path:
+            with open(save_path, 'wb') as f:
+                pickle.dump(clf, f)
         return clf
 
     @property
     def knn_clasifier(self) -> NearestNeighbors:
         if not self.__knn_clasifier:
-            self.__feat_extractor = self.init_knn()
+            raise Exception('knn_classifier must be initialized')
         return self.__knn_clasifier
     
 

@@ -44,8 +44,10 @@ class BaseDB(abc.ABC):
         assert len(knn) == num_neighbors
         return knn
 
-    def update_all_feats(self):
+    def update_all_feats(self, verbose=True):
         for item in self.get_all():
+            if verbose:
+                print(item['url'])
             item_feats = self.feat_extractor.get_feats(item['imgs'])
             self.update_feats(item['url'],item_feats)
 
