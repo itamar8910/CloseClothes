@@ -3,40 +3,15 @@ from database.BaseDB import BaseDB
 from typing import Dict, List
 import numpy as np
 from algorithm.feats.FeatsExtractor import VGG_FeatsExtractor
-from sklearn.neighbors import NearestNeighbors
-import pickle
 TINYDB_PATH = 'database/data/items_tinydb.json'
-KNN_PATH = 'database/data/knn_20180425.p'
 
 class TinyDB_DB(BaseDB):
 
-    def __init__(self, path=TINYDB_PATH, knn_path = KNN_PATH):
+    def __init__(self, path=TINYDB_PATH):
         super().__init__(path)
         self.db = TinyDB(self._path)
         self.__feat_extractor = VGG_FeatsExtractor()
-        try:        
-            with open(knn_path, 'rb') as f:
-                self.__knn_clasifier = pickle.load(f)
-        except FileNotFoundError:
-            self.__knn_clasifier = None
         
-    def init_knn(self, save_path = KNN_PATH):
-        clf = NearestNeighbors()
-        # TODO: run fit every time you the db changes
-        all_items = self.get_all()
-        clf.fit([feats for item in all_items for feats in item['feats']],[item['url'] for item in all_items for feat in item['feats']]) # flattened array https://stackoverflow.com/a/952952/4342751
-        if save_path:
-            with open(save_path, 'wb') as f:
-                pickle.dump(clf, f)
-        return clf
-
-    @property
-    def knn_clasifier(self) -> NearestNeighbors:
-        if not self.__knn_clasifier:
-            raise Exception('knn_classifier must be initialized')
-        return self.__knn_clasifier
-    
-
     def add_item(self, url : str, item : Dict) -> Dict:
         self.db.insert({**item,  **{'url': url}})
         

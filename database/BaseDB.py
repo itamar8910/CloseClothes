@@ -4,11 +4,20 @@ import numpy as np
 import abc
 from algorithm.feats.FeatsExtractor import FeatsExtractor
 from tqdm import tqdm
+from sklearn.neighbors import NearestNeighbors
+import pickle
 
 class BaseDB(abc.ABC):
-
-    def __init__(self, path):
+    KNN_PATH = 'database/data/knn_20180425.p'
+    def __init__(self, path,knn_path=BaseDB.KNN_PATH):
         self._path = path
+        try:        
+            with open(knn_path, 'rb') as f:
+                self.__knn_clasifier = pickle.load(f)
+        except FileNotFoundError:
+            self.__knn_clasifier = None
+
+    
 
     @abc.abstractmethod
     def add_item(self, url : str, item : Dict) -> Dict:
@@ -31,10 +40,21 @@ class BaseDB(abc.ABC):
     def feat_extractor(self) -> FeatsExtractor:
         ...
     
+    def init_knn(self, save_path = KNN_PATH):
+        clf = NearestNeighbors()
+        # TODO: run fit every time you the db changes
+        all_items = self.get_all()
+        clf.fit([feats for item in all_items for feats in item['feats']],[item['url'] for item in all_items for feat in item['feats']]) # flattened array https://stackoverflow.com/a/952952/4342751
+        if save_path:
+            with open(save_path, 'wb') as f:
+                pickle.dump(clf, f)
+        return clf
+
     @property
-    @abc.abstractmethod
-    def knn_clasifier(self):  # lazily evaluate
-        ...
+    def knn_clasifier(self) -> NearestNeighbors:
+        if not self.__knn_clasifier:
+            raise Exception('knn_classifier must be initialized,initialize it by running init_knn()')
+        return self.__knn_clasifier
 
     def knn(self, center: np.ndarray, num_neighbors: int) -> List[dict]:
         """ given a "center" image vector, return the {num_neighbors} nearest DB items """
