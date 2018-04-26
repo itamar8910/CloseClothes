@@ -5,7 +5,7 @@ import numpy as np
 from algorithm.feats.FeatsExtractor import VGG_FeatsExtractor
 from sklearn.neighbors import NearestNeighbors
 import pickle
-TINYDB_PATH = 'database/items_tinydb.json'
+TINYDB_PATH = 'database/data/items_tinydb.json'
 KNN_PATH = 'database/data/knn_20180425.p'
 
 class TinyDB_DB(BaseDB):
@@ -20,10 +20,11 @@ class TinyDB_DB(BaseDB):
         except FileNotFoundError:
             self.__knn_clasifier = None
         
-    def init_knn(self, save_path = None):
+    def init_knn(self, save_path = KNN_PATH):
         clf = NearestNeighbors()
         # TODO: run fit every time you the db changes
-        clf.fit(item['feats'] for item in self.get_all())
+        all_items = self.get_all()
+        clf.fit([feats for item in all_items for feats in item['feats']],[item['url'] for item in all_items for feat in item['feats']]) # flattened array https://stackoverflow.com/a/952952/4342751
         if save_path:
             with open(save_path, 'wb') as f:
                 pickle.dump(clf, f)

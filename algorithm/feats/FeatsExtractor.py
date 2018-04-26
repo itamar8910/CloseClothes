@@ -10,8 +10,8 @@ class FeatsExtractor:
         # child will load model
         pass
 
-    def get_feats(self, imgs_paths : List[str or Image]) -> List[np.ndarray]:
-        return self.get_feats_raw(np.array([imageio.imread(path) for path in imgs_paths]))
+    def get_feats(self, imgs_paths : List[str or np.ndarray]) -> List[np.ndarray]:
+        return self.get_feats_raw(np.array([imageio.imread(path) if isinstance(path,str) else path for path in imgs_paths]))
 
     def get_feats_raw(self, img_array : np.ndarray) -> np.ndarray:
         "extract feats for a single image, given as a numpy array"
@@ -23,7 +23,7 @@ class FeatsExtractor:
     def get_tar_img_shape(self) -> Tuple[int, int]:
         raise NotImplementedError
 
-    def preprocess_input(img_array : np.ndarray) -> np.ndarray:
+    def preprocess_input(self,img_array : np.ndarray) -> np.ndarray:
         raise NotImplementedError
 
 class VGG_FeatsExtractor(FeatsExtractor):

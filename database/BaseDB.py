@@ -3,6 +3,7 @@ import json
 import numpy as np
 import abc
 from algorithm.feats.FeatsExtractor import FeatsExtractor
+from tqdm import tqdm
 
 class BaseDB(abc.ABC):
 
@@ -36,20 +37,23 @@ class BaseDB(abc.ABC):
         ...
 
     def knn(self, center: np.ndarray, num_neighbors: int) -> List[dict]:
-        """ given a "center" feature vectors, return the {num_neighbors} nearest items """
-        neighbor_indexes = self.knn_clasifier.kneighbors(
-            center, num_neighbors, return_distance=False)
+        """ given a "center" image vector, return the {num_neighbors} nearest DB items """
+        center_feats = self.feat_extractor.get_feats([center])
+        neighbor_indexes = self.knn_clasifier.kneighbors(center_feats, num_neighbors, return_distance=False)
         all_items = self.get_all()
-        knn = [all_items[index] for index in neighbor_indexes]
+        knn = [all_items[index] for index in neighbor_indexes[0]]
         assert len(knn) == num_neighbors
         return knn
 
     def update_all_feats(self, verbose=True):
-        for item in self.get_all():
-            if verbose:
-                print(item['url'])
-            item_feats = self.feat_extractor.get_feats(item['imgs'])
-            self.update_feats(item['url'],item_feats)
+        for item in tqdm(iterable=self.get_all(), desc="Feats updated", disable=not verbose):
+            # if verbose:
+            #     print(item['url'])
+            try: # check if item already has feats
+                item['feats']
+            except KeyError:
+                item_feats = self.feat_extractor.get_feats(item['imgs'])
+                self.update_feats(item['url'],item_feats)
 
     def get_all(self):
         ...
