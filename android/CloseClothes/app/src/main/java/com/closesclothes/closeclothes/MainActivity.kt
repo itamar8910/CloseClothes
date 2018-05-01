@@ -42,8 +42,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     fun BCameraClick(view : View?){
         startActivity( Intent(this, CameraActivity::class.java));
+//        startActivity( Intent(this, CatalogActivity::class.java));
     }
 }

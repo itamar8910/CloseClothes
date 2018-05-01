@@ -94,6 +94,7 @@ class CameraActivity : AppCompatActivity() {
             socketWrapper.send(byteArray)
             var resultJson = socketWrapper.receiveJson()
             Log.i(MainActivity::TAG.toString(), "result JSON:" + resultJson.toString())
+
             socketWrapper.closeSocket()
         }
 
