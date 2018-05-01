@@ -7,9 +7,9 @@ from tqdm import tqdm
 from sklearn.neighbors import NearestNeighbors
 import pickle
 
+KNN_PATH = 'database/data/knn_20180425.p'
 class BaseDB(abc.ABC):
-    KNN_PATH = 'database/data/knn_20180425.p'
-    def __init__(self, path,knn_path=BaseDB.KNN_PATH):
+    def __init__(self, path,knn_path=KNN_PATH):
         self._path = path
         try:        
             with open(knn_path, 'rb') as f:
