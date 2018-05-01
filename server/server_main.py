@@ -6,10 +6,15 @@ from struct import pack,unpack
 from PIL import Image
 import io
 from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
+from database.TinyDB_DB import TinyDB_DB
 import numpy as np
+import json
+from typing import List
 SOCKET_SIZE = 10
 PORT = 8080
+NUM_NEIGHBORS = 3
 
+db = TinyDB_DB()
 def main():
     sever_socket = socket.socket(family=socket.AF_INET,type=socket.SOCK_STREAM)
     sever_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -38,7 +43,12 @@ def handle_client(client_socket):
                 else:
                     raise
         return  b''.join(chunks)
-
+    
+    def send_socket_bytes(message : bytes):
+        msg_length = pack('!i', len(message))
+        client_socket.sendall(msg_length)
+        client_socket.sendall(message)
+        
     HEADER_SIZE = 4
     image_size = int(unpack('!i',read_socket_bytes(HEADER_SIZE))[0])
     image_bytes = read_socket_bytes(image_size)
@@ -51,6 +61,9 @@ def handle_client(client_socket):
     print(upperbody_bbox)
     img_upperbody = img.crop(upperbody_bbox)
     img_upperbody.show()
+    knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
+    knn_json = json.dumps(knn)
+    send_socket_bytes(bytes(knn_json))
 
 if __name__ == '__main__':
     main()
