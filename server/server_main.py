@@ -61,9 +61,13 @@ def handle_client(client_socket):
     print(upperbody_bbox)
     img_upperbody = img.crop(upperbody_bbox)
     img_upperbody.show()
-    knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
-    knn_json = json.dumps(knn)
-    send_socket_bytes(bytes(knn_json))
+    # knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
+    # knn_json = json.dumps(knn)
+    knn_json = json.dumps({
+        '1':'2',
+        '3':'4'
+    })
+    send_socket_bytes(bytes(knn_json, encoding='utf-8'))
 
 if __name__ == '__main__':
     main()
