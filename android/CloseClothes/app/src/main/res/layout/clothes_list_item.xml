@@ -2,31 +2,42 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="300dp"
+    android:orientation="horizontal"
+    android:layoutDirection="ltr">
 
     <ImageView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.7"
+        android:src="@mipmap/ic_launcher"
         android:id="@+id/clothes_lit_item_iv"/>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="left">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:text="text1"
+            android:padding="5dp"
+            android:textStyle="bold"
             android:id="@+id/clothes_list_item_tv1"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:text="text2"
             android:id="@+id/clothes_list_item_tv2"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="text2"
+            android:id="@+id/clothes_list_item_tv3"/>
     </LinearLayout>
 
 
