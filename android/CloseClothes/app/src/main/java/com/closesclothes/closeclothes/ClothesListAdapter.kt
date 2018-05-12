@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 import org.json.JSONObject
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
-
+import android.net.Uri
 
 
 class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, private val data: List<String>) : ArrayAdapter<String>(context, layoutResourceId, data) {
@@ -92,7 +92,11 @@ class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, p
         viewHolder.tv2?.setText(currentItemJsonObject.getString("price"))
         viewHolder.tv3?.setText(this.unescapeUtf16(currentItemJsonObject.getString("description")))
 
+        viewHolder.clotheImage?.setOnClickListener(View.OnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(currentItemJsonObject.getString("url")))
 
+            this.context.startActivity(browserIntent)
+        })
 
         viewHolder.position = position
         return convertViewToReturn
