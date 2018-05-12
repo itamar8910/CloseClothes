@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.closesclothes.closeclothes.R
+import com.squareup.picasso.Picasso
 import org.json.JSONObject
 
 class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, private val data: List<String>) : ArrayAdapter<String>(context, layoutResourceId, data) {
@@ -52,6 +53,10 @@ class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, p
         }
 
         var currentItemJsonObject = JSONObject(this.data[position])
+        var currentItemFirstPicUrl = currentItemJsonObject.getJSONArray("imgs").getString(0)
+        //load pic with Picasso library
+        Picasso.get().load(currentItemFirstPicUrl).into(viewHolder.clotheImage);
+
         viewHolder.tv1?.setText(currentItemJsonObject.getString("url"))
         viewHolder.tv2?.setText("tv2")
 
