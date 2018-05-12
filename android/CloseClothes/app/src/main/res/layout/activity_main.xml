@@ -42,4 +42,15 @@
         android:layout_alignStart="@+id/button2"
         android:layout_alignTop="@+id/button3"
         android:text="History" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/button4"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="63dp"
+        android:layout_marginEnd="56dp"
+        android:onClick="bTestClothesListClick"
+        android:text="TestClothesList" />
 </RelativeLayout>

@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.closesclothes.closeclothes.R
+import org.json.JSONObject
 
 class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, private val data: List<String>) : ArrayAdapter<String>(context, layoutResourceId, data) {
     private val tags: MutableList<String>
@@ -50,8 +51,8 @@ class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, p
             viewHolder = convertViewToReturn!!.getTag() as ViewHolder
         }
 
-
-        viewHolder.tv1?.setText("tv1")
+        var currentItemJsonObject = JSONObject(this.data[position])
+        viewHolder.tv1?.setText(currentItemJsonObject.getString("url"))
         viewHolder.tv2?.setText("tv2")
 
 
