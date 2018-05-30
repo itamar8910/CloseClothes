@@ -4,17 +4,15 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-import Tiny_Faces_in_Tensorflow.tiny_face_model as tiny_face_model
-import Tiny_Faces_in_Tensorflow.util as util
+import tiny_faces.tiny_face_model as tiny_face_model
+import tiny_faces.util as util
 from argparse import ArgumentParser
 import cv2
 import scipy.io
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 import pickle
 
-import pylab as pl
 import time
 import os
 import sys
@@ -22,12 +20,12 @@ from scipy.special import expit
 import glob
 
 MAX_INPUT_DIM = 5000.0
-weight_file_path = 'Tiny_Faces_in_Tensorflow/models/hr_res101_pickle3.p'
+weight_file_path = 'tiny_faces/models/hr_res101_pickle3.p'
 
-print("loading tiny faces model")
+# print("loading tiny faces model")
 # Create the tiny face model which weights are loaded from a pretrained model.
 model = tiny_face_model.Model(weight_file_path)
-print("finished loading tiny faces model")
+# print("finished loading tiny faces model")
 
 # placeholder of input images. Currently batch size of one is supported.
 x = tf.placeholder(tf.float32, [1, None, None, 3])  # n, h, w, c
@@ -40,7 +38,17 @@ with open(weight_file_path, "rb") as f:
 average_image = model.get_data_by_key("average_image")
 clusters = model.get_data_by_key("clusters")
 
-def get_faces(img_path, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
+def standard_bboxes(bboxes):
+    """return (x1,y1) (x2,y2) instead of (x1,y1,x2,y2,confidence)"""
+    return [(bbox[:2], bbox[2:-1]) for bbox in bboxes]
+
+def get_faces_from_file(img_path: str, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
+    return get_faces(read_image(img_path), prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False)
+
+def get_faces(raw_img, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
+    return standard_bboxes(_raw_get_faces(raw_img, prob_thresh, nms_thresh, lw, display))
+
+def _raw_get_faces(raw_img, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
     """
     Detect faces in images.
     """
@@ -56,23 +64,9 @@ def get_faces(img_path, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        fname = img_path.split(os.sep)[-1]
-        raw_img = cv2.imread(img_path)
         raw_img = cv2.cvtColor(raw_img, cv2.COLOR_BGR2RGB)
         raw_img_f = raw_img.astype(np.float32)
 
-        def _calc_scales():
-            raw_h, raw_w = raw_img.shape[0], raw_img.shape[1]
-            min_scale = min(np.floor(np.log2(np.max(clusters_w[normal_idx] / raw_w))),
-                            np.floor(np.log2(np.max(clusters_h[normal_idx] / raw_h))))
-            max_scale = min(1.0, -np.log2(max(raw_h, raw_w) / MAX_INPUT_DIM))
-            scales_down = pl.frange(min_scale, 0, 1.)
-            scales_up = pl.frange(0.5, max_scale, 0.5)
-            scales_pow = np.hstack((scales_down, scales_up))
-            scales = np.power(2.0, scales_pow)
-            return scales
-
-        # scales = _calc_scales()
         scales = np.array([2.0], dtype=np.float32)
         start = time.time()
 
@@ -81,7 +75,7 @@ def get_faces(img_path, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
 
         # process input at different scales
         for s in scales:
-            print("Processing {} at scale {:.4f}".format(fname, s))
+            # print("Processing {} at scale {:.4f}".format(fname, s))
             img = cv2.resize(raw_img_f, (0, 0), fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
             img = img - average_image
             img = img[np.newaxis, :]
@@ -132,7 +126,7 @@ def get_faces(img_path, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
             tmp_bboxes = _calc_bounding_boxes()
             bboxes = np.vstack((bboxes, tmp_bboxes))  # <class 'tuple'>: (5265, 5)
 
-        print("time {:.2f} secs for {}".format(time.time() - start, fname))
+        # print("time {:.2f} secs for {}".format(time.time() - start, fname))
 
         # non maximum suppression
         # refind_idx = util.nms(bboxes, nms_thresh)
@@ -142,6 +136,11 @@ def get_faces(img_path, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False):
         refind_idx = sess.run(refind_idx)
         refined_bboxes = bboxes[refind_idx]
         return refined_bboxes
+
+
+import imageio
+def read_image(img_path):
+    return imageio.imread(img_path)
         # overlay_bounding_boxes(raw_img, refined_bboxes, lw)
         #
         # if display:
