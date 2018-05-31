@@ -4,7 +4,7 @@ import imageio
 
 @pytest.fixture(scope="session")
 def tiny_face_image():
-    test_image_url = "tiny_faces/images/celeb2.jpg"
+    test_image_url = "http://newsimg.bbc.co.uk/media/images/47167000/jpg/_47167695_faces_jun_466.jpg"
     return imageio.imread(test_image_url)
 
 @pytest.fixture(scope="session")

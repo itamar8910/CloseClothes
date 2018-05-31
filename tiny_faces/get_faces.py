@@ -33,8 +33,6 @@ x = tf.placeholder(tf.float32, [1, None, None, 3])  # n, h, w, c
 score_final = model.tiny_face(x)
 
 # Load an average image and clusters(reference boxes of templates).
-with open(weight_file_path, "rb") as f:
-    _, mat_params_dict = pickle.load(f)
 average_image = model.get_data_by_key("average_image")
 clusters = model.get_data_by_key("clusters")
 

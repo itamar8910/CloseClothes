@@ -22,4 +22,4 @@ classification/*.json
 *.log
 *.json
 *.p
-.pytest_cache
+/.pytest_cache
