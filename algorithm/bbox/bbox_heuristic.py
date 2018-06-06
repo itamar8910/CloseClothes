@@ -31,6 +31,10 @@ def get_upperbody_bbox(img_path, w_face_bbox=False):
     return get_uperbody_bbox_from_npy(img1, w_face_bbox=w_face_bbox)
 
 def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
+    if len(img_npy.shape) == 4:
+        img_npy = img_npy[0]
+    
+   
     face_locations = face_recognition.face_locations(img_npy)
     if len(face_locations) == 0:
         print("NO FACES DETECTED")

@@ -75,7 +75,7 @@ class BaseDB(abc.ABC):
                 item['feats']
             except KeyError:
                 item_feats = self.feat_extractor.get_feats(item['imgs'])
-                self.update_feats(item['url'],item_feats)
+                self.update_feats(item['url'], item_feats)
 
     def get_all(self):
         pass
