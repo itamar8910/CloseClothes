@@ -18,7 +18,11 @@ def download_mat_model(mat_model_path=DEFAULT_MAT_FILE_PATH,verbose=True):
     with requests.get(MAT_MODEL_URL, stream=True) as request:
         chunk_size = 1024
         length = int(request.headers['content-length'])
-        if os.path.getsize(mat_model_path) == length:
+        try:
+            file_size = os.path.getsize(mat_model_path)
+        except FileNotFoundError:
+            file_size = 0
+        if file_size == length:
             print("File already exists")
         else:
             with open(mat_model_path, 'wb') as fp:
