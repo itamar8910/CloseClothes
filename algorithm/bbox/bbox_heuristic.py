@@ -37,8 +37,8 @@ def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
    
     face_locations = face_recognition.face_locations(img_npy)
     if len(face_locations) == 0:
-        print("NO FACES DETECTED")
-        return None
+        raise Exception("NO FACES DETECTED")
+        
     if len(face_locations) > 1:
         print("WARNING: More than one person detected, currently only supoorts one person oer image")
     

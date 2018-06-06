@@ -35,18 +35,21 @@ class FeatsExtractor:
         raise NotImplementedError
 
     def crop_to_upperbody(self, img : np.ndarray) -> np.ndarray:
+        print(img.shape)
         
-        x, y, w, h = None, None, None, None 
+        upperbody_bbox = [None, None, None, None]
         try:
             upperbody_bbox = get_uperbody_bbox_from_npy(img)  # x, y, w, h
         except Exception as e:  # could not find upperbody
-            #TODO: impl
-            raise e
-            assert False
+            print('NO FACES DETECTED, cropping from center instead')
+            # TODO: bug in here, img.shape 
+            img_height, img_width, _ = img.shape
+            center_crop_offset = 0.2
+            upperbody_bbox = [center_crop_offset * img_width, center_crop_offset * img_height, (1-center_crop_offset*2) * img_width, (1-center_crop_offset*2) * img_height]
         x, y, w, h = [int(x) for x in upperbody_bbox]
         
         upperboy_img = img[y : y + h, x : x + w]
-        
+ 
         return upperboy_img
 
 
