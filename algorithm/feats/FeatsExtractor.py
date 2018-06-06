@@ -3,6 +3,9 @@ from typing import List, Tuple
 from keras import applications
 import imageio
 from PIL.Image import Image
+from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
+import cv2
+
 
 class FeatsExtractor:
 
@@ -11,7 +14,12 @@ class FeatsExtractor:
         pass
 
     def get_feats(self, imgs_paths : List[str or np.ndarray]) -> List[np.ndarray]:
-        return self.get_feats_raw(np.array([imageio.imread(path) if isinstance(path,str) else path for path in imgs_paths]))
+        """
+        if received str, handles downloading the image
+        handles croppoing the image to upperbody
+        """
+        return self.get_feats_raw([self.preprocess_input(self.crop_to_upperbody(imageio.imread(img) if isinstance(img, str) else img)) for img in imgs_paths])
+        # return self.get_feats_raw(self.crop_to_upperbody(np.array([imageio.imread(path) if isinstance(path,str) else path for path in imgs_paths])))
 
     def get_feats_raw(self, img_array : np.ndarray) -> np.ndarray:
         "extract feats for a single image, given as a numpy array"
@@ -23,8 +31,24 @@ class FeatsExtractor:
     def get_tar_img_shape(self) -> Tuple[int, int]:
         raise NotImplementedError
 
-    def preprocess_input(self,img_array : np.ndarray) -> np.ndarray:
+    def preprocess_input(self, img_array : np.ndarray) -> np.ndarray:
         raise NotImplementedError
+
+    def crop_to_upperbody(self, img : np.ndarray) -> np.ndarray:
+        
+        x, y, w, h = None, None, None, None 
+        try:
+            upperbody_bbox = get_uperbody_bbox_from_npy(img)  # x, y, w, h
+        except Exception as e:  # could not find upperbody
+            #TODO: impl
+            raise e
+            assert False
+        x, y, w, h = [int(x) for x in upperbody_bbox]
+        
+        upperboy_img = img[y : y + h, x : x + w]
+        
+        return upperboy_img
+
 
 class VGG_FeatsExtractor(FeatsExtractor):
 
@@ -37,15 +61,15 @@ class VGG_FeatsExtractor(FeatsExtractor):
         self.model = applications.VGG16(include_top=False, weights='imagenet')
 
     def preprocess_input(self, img_array : np.ndarray) -> np.ndarray:
+        img_array = cv2.resize(img_array, self.get_tar_img_shape())
         assert self.good_img_shape(img_array)
         img_mean_pixel = np.array([[VGG_FeatsExtractor.TRAIN_MEAN for x in range(img_array.shape[1])] for x in range(img_array.shape[0])])
         return img_array - img_mean_pixel
 
     def get_feats_raw(self, imgs_arrays : np.ndarray) -> np.ndarray:
-        return [x.flatten() for x in self.model.predict(imgs_arrays)]
+       
+        return [self.model.predict(np.array([img]))[0].flatten() for img in imgs_arrays]
 
     def get_tar_img_shape(self) -> Tuple[int, int]:
         return (VGG_FeatsExtractor.IMG_WIDTH, VGG_FeatsExtractor.IMG_HEIGHT)
 
-if __name__ == "__main__":
-    print(VGG_FeatsExtractor().get_feats(['/home/itamar/Downloads/hmprod.jpeg', '/home/itamar/Downloads/hmprod.jpeg']))
