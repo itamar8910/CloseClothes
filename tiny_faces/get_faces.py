@@ -136,6 +136,31 @@ def _raw_get_faces(raw_img, prob_thresh=0.5, nms_thresh=0.1, lw=3, display=False
         return refined_bboxes
 
 
+def overlay_bounding_boxes(raw_img, refined_bboxes, lw):
+    """Overlay bounding boxes of face on images.
+    Args:
+        raw_img:
+        A target image.
+        refined_bboxes:
+        Bounding boxes of detected faces.
+        lw: 
+        Line width of bounding boxes. If zero specified,
+        this is determined based on confidence of each detection.
+    Returns:
+        None.
+    """
+
+    # Overlay bounding boxes on an image with the color based on the confidence.
+    for r in refined_bboxes:
+        # print(r)
+        # print(type(r))
+        # print(type(r[0]))
+        # exit()
+        cv2.rectangle(raw_img, (int(r[0][0]), int(r[0][1])), (int(r[1][0]), int(r[1][1])), (255, 255, 255), 1)
+    cv2.imshow('img', raw_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 import imageio
 def read_image(img_path):
     return imageio.imread(img_path)
@@ -150,35 +175,16 @@ def read_image(img_path):
         # raw_img = cv2.cvtColor(raw_img, cv2.COLOR_RGB2BGR)
         # cv2.imwrite(os.path.join(output_dir, fname), raw_img)
 
-#
-# def main():
-#     argparse = ArgumentParser()
-#     argparse.add_argument('--weight_file_path', type=str, help='Pretrained weight file.', default="/path/to/mat2tf.pkl")
-#     argparse.add_argument('--data_dir', type=str, help='Image data directory.',
-#                           default="/path/to/input_image_directory")
-#     argparse.add_argument('--output_dir', type=str, help='Output directory for images with faces detected.',
-#                           default="/path/to/output_directory")
-#     argparse.add_argument('--prob_thresh', type=float, help='The threshold of detection confidence(default: 0.5).',
-#                           default=0.5)
-#     argparse.add_argument('--nms_thresh', type=float,
-#                           help='The overlap threshold of non maximum suppression(default: 0.1).', default=0.1)
-#     argparse.add_argument('--line_width', type=int, help='Line width of bounding boxes(0: auto).', default=3)
-#     argparse.add_argument('--display', type=bool, help='Display each image on window.', default=False)
-#
-#     args = argparse.parse_args()
-#
-#     # check arguments
-#     assert os.path.exists(args.weight_file_path), "weight file: " + args.weight_file_path + " not found."
-#     assert os.path.exists(args.data_dir), "data directory: " + args.data_dir + " not found."
-#     assert os.path.exists(args.output_dir), "output directory: " + args.output_dir + " not found."
-#     assert args.line_width >= 0, "line_width should be >= 0."
-#
-#     with tf.Graph().as_default():
-#         evaluate(
-#             weight_file_path=args.weight_file_path, data_dir=args.data_dir, output_dir=args.output_dir,
-#             prob_thresh=args.prob_thresh, nms_thresh=args.nms_thresh,
-#             lw=args.line_width, display=args.display)
-#
-#
-# if __name__ == '__main__':
-#     main()
+def show_for_img(imgpath):
+    img = read_image(imgpath)
+    t1 = time.time()
+    faces = get_faces(img)
+    print('comp time:', time.time() - t1)
+    print('faces:', faces)
+    overlay_bounding_boxes(img, faces, 0)
+
+# if __name__ == "__main__":
+#     imgpath = '/home/itamar/programming/closeClothes/DeepFashion/clf_train_dummy/Cardigan/Abstract_Geo_Cardigan_img_00000009.jpg'
+#     img = read_image(imgpath)
+#     faces = get_faces(img)
+#     overlay_bounding_boxes(img, faces)
