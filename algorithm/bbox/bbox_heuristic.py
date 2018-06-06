@@ -1,7 +1,7 @@
 # Upper body bounding box, with heuristic that have to do with face/body proprtions
 
 # requires dlib, https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf
-import face_recognition
+import face_recognition # https://github.com/ageitgey/face_recognition
 from PIL import Image, ImageDraw
 
 def face_to_upperbody(img_shape, face_x, face_y, face_w, face_h):
@@ -52,8 +52,6 @@ def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
 def draw_upperbody_bbox(img_path):
     face_bbox, upperbody_bbox = get_upperbody_bbox(img_path, w_face_bbox=True)
     draw_bboxes(img_path, [face_bbox, upperbody_bbox])
-
-
 
 if __name__ == "__main__":
     import sys
