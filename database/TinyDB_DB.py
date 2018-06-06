@@ -30,7 +30,7 @@ class TinyDB_DB(BaseDB):
         feats = [list(feat) for feat in feats] # ndarray is not json-serializeable
         for feat in feats:
             for index,item in enumerate(feat):
-                feat[index] = str(item) # floats are not json-serializeable
+                feat[index] = float(item) # float32 are not json-serializeable
         self.db.update({'feats':feats}, q_update.url == url)
     
     @property
