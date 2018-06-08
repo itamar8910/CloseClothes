@@ -1,4 +1,5 @@
 from typing import Dict, List
+from urllib.error import HTTPError
 import json
 import numpy as np
 import abc
@@ -74,8 +75,11 @@ class BaseDB(abc.ABC):
             try: # check if item already has feats
                 item['feats']
             except KeyError:
-                item_feats = self.feat_extractor.get_feats(item['imgs'])
-                self.update_feats(item['url'], item_feats)
+                try:
+                    item_feats = self.feat_extractor.get_feats(item['imgs'])
+                    self.update_feats(item['url'], item_feats)
+                except HTTPError as e:
+                    print(e) #don't stop for one error
 
     def get_all(self):
         pass
