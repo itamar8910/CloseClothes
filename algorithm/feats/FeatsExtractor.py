@@ -35,7 +35,7 @@ class FeatsExtractor:
         raise NotImplementedError
 
     def crop_to_upperbody(self, img : np.ndarray) -> np.ndarray:
-        print(img.shape)
+        # print(img.shape)
         
         upperbody_bbox = [None, None, None, None]
         try:

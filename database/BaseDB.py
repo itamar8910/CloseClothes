@@ -78,7 +78,7 @@ class BaseDB(abc.ABC):
                 try:
                     item_feats = self.feat_extractor.get_feats(item['imgs'])
                     self.update_feats(item['url'], item_feats)
-                except HTTPError as e:
+                except (HTTPError, IOError) as e:
                     print(e) #don't stop for one error
 
     def get_all(self):
