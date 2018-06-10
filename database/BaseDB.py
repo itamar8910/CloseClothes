@@ -8,7 +8,7 @@ from tqdm import tqdm
 from sklearn.neighbors import NearestNeighbors
 import pickle
 
-KNN_PATH = 'database/data/knn_20180425.p'
+KNN_PATH = 'database/data/knn_20180610.p'
 class BaseDB(abc.ABC):
     def __init__(self, path,knn_path=KNN_PATH):
         self._path = path
@@ -17,8 +17,6 @@ class BaseDB(abc.ABC):
                 self.__knn_clasifier = pickle.load(fp)
         except FileNotFoundError:
             self.__knn_clasifier = None
-
-    
 
     @abc.abstractmethod
     def add_item(self, url : str, item : Dict) -> Dict:
@@ -78,8 +76,9 @@ class BaseDB(abc.ABC):
                 try:
                     item_feats = self.feat_extractor.get_feats(item['imgs'])
                     self.update_feats(item['url'], item_feats)
-                except (HTTPError, IOError) as e:
-                    print(e) #don't stop for one error
+                except (HTTPError, IOError) as e: #Non-existant scrape image. 
+                    print(e)
+                    self.remove_item(item['url'])
 
     def get_all(self):
         pass
