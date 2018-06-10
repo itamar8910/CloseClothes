@@ -1,15 +1,18 @@
-import sys
-sys.path.append("..")
-import socket
-from threading import Thread
-from struct import pack,unpack
-from PIL import Image
 import io
+import json
+import socket
+import sys
+from struct import pack, unpack
+from threading import Thread
+from typing import List
+
+import numpy as np
+from PIL import Image
+
 from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
 from database.TinyDB_DB import TinyDB_DB
-import numpy as np
-import json
-from typing import List
+
+sys.path.append("..")
 SOCKET_SIZE = 10
 PORT = 8080
 NUM_NEIGHBORS = 3
@@ -24,8 +27,9 @@ def main():
     while running:
         print("waiting for connection")
         client_socket, client_address = sever_socket.accept()
-        client_thread = Thread(target=handle_client,args=(client_socket,))
-        client_thread.start()
+        handle_client(client_socket)
+        # client_thread = Thread(target=handle_client,args=(client_socket,))
+        # client_thread.start()
 
 def handle_client(client_socket):
     print("Handling client:")
@@ -52,21 +56,20 @@ def handle_client(client_socket):
     HEADER_SIZE = 4
     image_size = int(unpack('!i',read_socket_bytes(HEADER_SIZE))[0])
     image_bytes = read_socket_bytes(image_size)
-    print(type(image_bytes))
-    print(len(image_bytes))
+    # print(type(image_bytes))
+    # print(len(image_bytes))
     img = Image.open(io.BytesIO(image_bytes))
-    img.show()
-    
-    upperbody_bbox = get_uperbody_bbox_from_npy(np.array(img))
-    print(upperbody_bbox)
-    img_upperbody = img.crop(upperbody_bbox)
-    img_upperbody.show()
-    # knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
-    # knn_json = json.dumps(knn)
-    knn_json = json.dumps({
-        '1':'2',
-        '3':'4'
-    })
+    PATH = 'tmp.png'
+    img.save(PATH)
+    # img.show()
+    # feats = db.feat_extractor.get_feats([PATH])[0]
+    K = 5
+    knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
+    knn_json = json.dumps(knn)
+    knn_json = db.knn(PATH, K)
+    for neighbor in knn_json:
+        del neighbor['feats']
+    knn_json = json.dumps(knn_json,ensure_ascii=True)
     send_socket_bytes(bytes(knn_json, encoding='utf-8'))
 
 if __name__ == '__main__':

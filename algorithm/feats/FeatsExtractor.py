@@ -1,10 +1,12 @@
-import numpy as np
 from typing import List, Tuple
-from keras import applications
-import imageio
-from PIL.Image import Image
-from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
+
 import cv2
+import imageio
+import numpy as np
+from keras import applications
+from PIL import Image
+
+from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
 
 
 class FeatsExtractor:
@@ -70,9 +72,9 @@ class VGG_FeatsExtractor(FeatsExtractor):
         return img_array - img_mean_pixel
 
     def get_feats_raw(self, imgs_arrays : np.ndarray) -> np.ndarray:
+        print(imgs_arrays[0].shape)
        
         return [self.model.predict(np.array([img]))[0].flatten() for img in imgs_arrays]
 
     def get_tar_img_shape(self) -> Tuple[int, int]:
         return (VGG_FeatsExtractor.IMG_WIDTH, VGG_FeatsExtractor.IMG_HEIGHT)
-

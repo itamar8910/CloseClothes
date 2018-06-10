@@ -7,9 +7,14 @@ from algorithm.feats import FeatsExtractor
 from tqdm import tqdm
 from sklearn.neighbors import NearestNeighbors
 import pickle
+from lazy import lazy
 
 KNN_PATH = 'database/data/knn_20180610.p'
 class BaseDB(abc.ABC):
+    @lazy
+    def all_items(self):
+        return self.get_all()
+
     def __init__(self, path,knn_path=KNN_PATH):
         self._path = path
         try:        
@@ -42,14 +47,18 @@ class BaseDB(abc.ABC):
     def init_knn(self, save_path = KNN_PATH):
         clf = NearestNeighbors()
         # TODO: run fit every time you the db changes
-        all_items = self.get_all()
-        X = np.stack([np.array(feats) for item in all_items for feats in item['feats']])
-        labels = [item['url'] for item in all_items for feat in item['feats']]
+        X = np.stack([np.array(feats) for item in self.all_items for feats in item['feats']])
+        labels = self.labels()
         clf.fit(X,labels) # flattened array https://stackoverflow.com/a/952952/4342751
         if save_path:
             with open(save_path, 'wb') as f:
                 pickle.dump(clf, f)
         return clf
+
+    @lazy
+    def labels(self):
+        labels = [item['url'] for item in self.all_items for feat in item['feats']]
+        return labels
 
     @property
     def knn_clasifier(self) -> NearestNeighbors:
@@ -57,12 +66,13 @@ class BaseDB(abc.ABC):
             raise Exception('knn_classifier must be initialized,initialize it by running init_knn()')
         return self.__knn_clasifier
 
-    def knn(self, center: np.ndarray, num_neighbors: int) -> List[dict]:
+    def knn(self, center: str, num_neighbors: int) -> List[dict]:
         """ given a "center" image vector, return the {num_neighbors} nearest DB items """
         center_feats = self.feat_extractor.get_feats([center])
-        neighbor_indexes = self.knn_clasifier.kneighbors(center_feats, num_neighbors, return_distance=False)
-        all_items = self.get_all()
-        knn = [all_items[index] for index in neighbor_indexes[0]]
+        neighbor_indicies = self.knn_clasifier.kneighbors(center_feats, num_neighbors, return_distance=False)
+        all_items = self.all_items
+        knn = [self.labels[index] for index in neighbor_indicies[0]]
+        knn = [self.get_by_url(url) for url in knn]
         assert len(knn) == num_neighbors
         return knn
 

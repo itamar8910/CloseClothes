@@ -15,10 +15,14 @@ def all_items(tiny_db : TinyDB_DB):
     return tiny_db.get_all()
 
 def test_knn(tiny_db):
-    test_image = tiny_db.get_all()[0]
+    test_image = tiny_db.all_items[0]
     knn = tiny_db.knn(test_image['imgs'][0], num_neighbors=1)
     assert test_image == knn[0]
 
+def test_items_len(all_items):
+    items_len = len(all_items)
+    print(items_len)
+    assert items_len > 0
 
 def test_feats_extracted(all_items : List[dict]):
     assert all(len(item['feats']) == len(item['imgs']) for item in all_items)
