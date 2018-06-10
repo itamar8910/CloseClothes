@@ -13,17 +13,14 @@ import android.widget.Toast
 import com.closesclothes.closeclothes.utils.SocketWrapper
 import java.io.ByteArrayOutputStream
 import kotlin.concurrent.thread
-import android.os.Environment.getExternalStorageDirectory
-import android.os.Environment.getExternalStorageDirectory
-import android.view.View
 import java.io.File
 import android.os.StrictMode
 import android.os.Build
 import java.text.SimpleDateFormat
 import java.util.*
 import android.graphics.BitmapFactory
-
-
+import android.widget.EditText
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class CameraActivity : AppCompatActivity() {
@@ -88,14 +85,16 @@ class CameraActivity : AppCompatActivity() {
             var stream = ByteArrayOutputStream()
             correctSize.compress(Bitmap.CompressFormat.PNG, 100, stream)
             var byteArray = stream.toByteArray()
-            val socketWrapper = SocketWrapper()
+            val socketWrapper = SocketWrapper(intent.getStringExtra("ip"))
             Log.i(MainActivity::TAG.toString(), "image bytes size:" + byteArray.size)
             socketWrapper.send(socketWrapper.intToByteArray(byteArray.size))
             socketWrapper.send(byteArray)
             var resultJson = socketWrapper.receiveJson()
             Log.i(MainActivity::TAG.toString(), "result JSON:" + resultJson.toString())
-
+            var intent = Intent(this, CatalogActivity::class.java)
+            intent.putExtra("clothesJson", resultJson.toString())
             socketWrapper.closeSocket()
+            startActivity(intent)
         }
 
     }

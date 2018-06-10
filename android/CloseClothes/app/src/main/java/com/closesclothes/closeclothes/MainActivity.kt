@@ -15,8 +15,8 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
-
-
+import android.widget.EditText
+import com.closesclothes.closeclothes.R.id.etIP
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,8 +43,11 @@ class MainActivity : AppCompatActivity() {
 
 
     fun BCameraClick(view : View?){
-//        startActivity( Intent(this, CameraActivity::class.java));
-        startActivity( Intent(this, CatalogActivity::class.java));
+        intent = Intent(this, CameraActivity::class.java)
+        var etIP = findViewById<EditText>(R.id.etIP);
+        intent.putExtra("ip", etIP.text.toString())
+        startActivity( intent);
+//        startActivity( Intent(this, CatalogActivity::class.java));
     }
 
     // dummy method to test clothes list with dummy data

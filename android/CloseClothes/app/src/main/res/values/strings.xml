@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CloseClothes</string>
+    <string name="ip">IP</string>
+    <string name="camera">Camera</string>
 </resources>

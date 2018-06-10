@@ -3,23 +3,20 @@ package com.closesclothes.closeclothes.utils
 
 import android.util.Log
 import com.closesclothes.closeclothes.MainActivity
+import org.json.JSONArray
 
-import java.io.DataOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.net.Socket
 
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.*
 import java.nio.ByteBuffer
 
-class SocketWrapper {
+class SocketWrapper(IP: String) {
 
     private var socket: Socket? = null
 
 //    private val IP = "192.168.0.105" // server's ip
-    private val IP = "192.168.0.108" // server's ip
 
 
     init {
@@ -41,15 +38,12 @@ class SocketWrapper {
         send(jsonStr.toByteArray())
     }
 
-    fun receiveJson(): JSONObject? {
+    fun receiveJson(): JSONArray? {
         val numJsonBytes = receiveInt()
         val jsonStr = String(receive(numJsonBytes)!!)
-        try {
-            return JSONObject(jsonStr)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-            return null
-        }
+
+        return JSONArray(jsonStr)
+
 
     }
 
@@ -76,11 +70,14 @@ class SocketWrapper {
         val data = ByteArray(len)
         try {
             stream = socket!!.getInputStream()
-            val count = stream!!.read(data)
-            if (count != len) {
-                Log.i(MainActivity::TAG.toString(), "ERROR: didn't read all wanted bytes, read:$count bytes")
-                return null
-            }
+            val dis = DataInputStream(stream)
+//            var buffer = ByteArray(8192)
+            dis.readFully(data)
+//            val count = stream!!.read(data)
+//            if (count != len) {
+//                Log.i(MainActivity::TAG.toString(), "ERROR: didn't read all wanted bytes, read:$count bytes")
+//                throw Exception("ERROR: didn't read all wanted bytes, read:$count bytes")
+//            }
             return data
         } catch (e: IOException) {
             e.printStackTrace()

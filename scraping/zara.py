@@ -1,5 +1,5 @@
-from ScrapeProduct import ScrapeProduct
-import utils
+from algorithm.scraping.ScrapeProduct import ScrapeProduct
+import algorithm.scraping.utils
 import re
 
 class ZaraProduct(ScrapeProduct):
