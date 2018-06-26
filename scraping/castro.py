@@ -1,14 +1,14 @@
+
 import json
 
 import requests
 from bs4 import BeautifulSoup
 
-from ScrapeProduct import ScrapeProduct
-from utils import get_html_selenium, get_html
+from algorithm.scraping.ScrapeProduct import ScrapeProduct
+from algorithm.scraping.utils import get_html_selenium, get_html
 from multiprocessing.dummy import Pool  # This is a thread-based Pool
 from multiprocessing import cpu_count
 import pickle
-from utils import get_html_selenium
 
 N_PRODUCTS = 0
 N_SCRAPED = 0
@@ -78,6 +78,27 @@ if __name__ == "__main__":
             'https://www.castro.com/he/WOMEN/Jumpsuits.html',
         ]
     }
+<<<<<<< Updated upstream:scraping/castro.py
     CastroProduct.scrape_whole_brand(categories,'castro.json')
+=======
+    products = []
+    # TODO: for some reason, returned html is not good when
+    # there are more pending requests than #CPUs. fix this.
+    N_THREADS = 8
+    pool = Pool(N_THREADS)
+    results = pool.starmap(scrape_castro_category, [(get_html(category_url), gender, category_url) for gender in categories.keys() for category_url in categories[gender]])
+    print(results)
+    scrapes = []
+    for res in results:
+        scrapes.extend(res)
+    # with open('castro_save.p', 'wb') as f:
+    #     pickle.dump(scrapes, f)
+    ScrapeProduct.json_from_scrapes(save_path, scrapes)
+
+
+if __name__ == "__main__":
+    print("ran");exit()
+    scrape_castro('castro.json')
+>>>>>>> Stashed changes:algorithm/scraping/castro.py
 
  
