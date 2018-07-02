@@ -183,8 +183,8 @@ def show_for_img(imgpath):
     print('faces:', faces)
     overlay_bounding_boxes(img, faces, 0)
 
-# if __name__ == "__main__":
-#     imgpath = '/home/itamar/programming/closeClothes/DeepFashion/clf_train_dummy/Cardigan/Abstract_Geo_Cardigan_img_00000009.jpg'
-#     img = read_image(imgpath)
-#     faces = get_faces(img)
-#     overlay_bounding_boxes(img, faces)
+if __name__ == "__main__":
+    imgpath = 'tmp.png'
+    img = read_image(imgpath)
+    faces = get_faces(img)
+    overlay_bounding_boxes(img, faces)
