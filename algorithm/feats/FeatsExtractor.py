@@ -5,8 +5,8 @@ import imageio
 import numpy as np
 from keras import applications
 from PIL import Image
-
 from algorithm.bbox.bbox_heuristic import get_uperbody_bbox_from_npy
+from algorithm.rgb_utils import get_image_rgb_mean_and_median
 
 
 class FeatsExtractor:
@@ -72,9 +72,16 @@ class VGG_FeatsExtractor(FeatsExtractor):
         return img_array - img_mean_pixel
 
     def get_feats_raw(self, imgs_arrays : np.ndarray) -> np.ndarray:
-        print(imgs_arrays[0].shape)
-       
-        return [self.model.predict(np.array([img]))[0].flatten() for img in imgs_arrays]
+        # print(imgs_arrays[0].shape)
+        images_deep_feats = [self.model.predict(np.array([img]))[0].flatten() for img in imgs_arrays]
+        print('num of deep features:', len(images_deep_feats[0]))
+        images_rgb_data = get_image_rgb_mean_and_median(imgs_arrays)
+        # images_rgb_mean = [rgb_data['mean'] for rgb_data in images_rgb_data]
+        images_rgb_median = [rgb_data['median'] for rgb_data in images_rgb_data]
+        rgb_median_weight = int(len(images_deep_feats[0]) / 2 / 3)
+        images_color_feats = [np.repeat(med, rgb_median_weight) for med in images_rgb_median]
+        images_whole_feats = [np.concatenate((deep_feats, color_feats), axis=0) for deep_feats, color_feats in zip(images_deep_feats, images_color_feats)]
+        return images_whole_feats
 
     def get_tar_img_shape(self) -> Tuple[int, int]:
         return (VGG_FeatsExtractor.IMG_WIDTH, VGG_FeatsExtractor.IMG_HEIGHT)
