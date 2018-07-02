@@ -35,7 +35,13 @@ def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
         img_npy = img_npy[0]
     
    
-    face_locations = face_recognition.face_locations(img_npy)
+    from tiny_faces import get_faces
+    # face_locations = face_recognition.face_locations(img_npy)
+    tmp_locations = get_faces(img_npy)
+    face_locations = []
+    for loc in tmp_locations:
+        face_locations.append([float(loc[0][0]), float(loc[0][1]), float(loc[1][0] - loc[0][0]), float(loc[1][1] - loc[1][0])])
+
     if len(face_locations) == 0:
         raise Exception("NO FACES DETECTED")
         
