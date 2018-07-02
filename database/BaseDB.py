@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List,Tuple
 from urllib.error import HTTPError
 import json
 import numpy as np
@@ -66,32 +66,48 @@ class BaseDB(abc.ABC):
             raise Exception('knn_classifier must be initialized,initialize it by running init_knn()')
         return self.__knn_clasifier
 
-    def knn(self, center: str, num_neighbors: int) -> List[dict]:
-        """ given a "center" image vector, return the {num_neighbors} nearest DB items """
+    @staticmethod
+    def inner_index(index : int,labels :List[str]):
+        """
+        given an index in `self.labels` returns the "inner_index" of that item.
+        meaning what number picture it is inside the item
+        """
+        item_url = labels[index]
+        url = item_url
+        i = 0
+        try:
+            while url == item_url:
+                i+=1
+                url = labels[index - i]
+        except IndexError: # i out of range, it's the first item
+            pass
+        return i-1
+
+    def knn(self, center: str, num_neighbors: int) -> List[Tuple[int,dict]]:
+        """ given a "center" path to image vector, return the {num_neighbors} nearest DB items """
         center_feats = self.feat_extractor.get_feats([center])
         neighbor_indicies = self.knn_clasifier.kneighbors(center_feats, num_neighbors, return_distance=False)
-        all_items = self.all_items
-        knn = [self.labels[index] for index in neighbor_indicies[0]]
-        knn = [self.get_by_url(url) for url in knn]
-        assert len(knn) == num_neighbors
-        return knn
+        clothes_urls = [self.labels[index] for index in neighbor_indicies[0]]
+        inner_indices = [self.inner_index(index,self.labels) for index in neighbor_indicies[0]]
+        clothes = [self.get_by_url(url) for url in clothes_urls]
+        assert len(clothes) == num_neighbors
+        return list(zip( inner_indices,clothes))
 
     def update_all_feats(self, verbose=True):
         for item in tqdm(iterable=self.get_all(), desc="Feats updated", disable=not verbose):
             # if verbose:
             #     print(item['url'])
-            try: # check if item already has feats
-                item['feats']
-            except KeyError:
-                try:
-                    item_feats = self.feat_extractor.get_feats(item['imgs'])
-                    self.update_feats(item['url'], item_feats)
-                except (HTTPError, IOError) as e: #Non-existant scrape image. 
-                    print(e)
-                    self.remove_item(item['url'])
+ 
+            try:
+                item_feats = self.feat_extractor.get_feats(item['imgs'])
+                self.update_feats(item['url'], item_feats)
+            except (HTTPError, IOError) as e: #Non-existant scrape image. 
+                print(e)
+                self.remove_item(item['url'])
 
+    
     def get_all(self):
-        pass
+        raise NotImplementedError
 
     @classmethod
     def init_from_json(cls, db_path, *json_paths):

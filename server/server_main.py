@@ -66,13 +66,13 @@ def handle_client(client_socket):
     K = 5
     # knn = db.knn(center=np.array(img), num_neighbors=NUM_NEIGHBORS)
     # knn_json = json.dumps(knn)
-    knn_json = db.knn(PATH, K)
+    indicies,knn_json = db.knn(PATH, K)
     for neighbor in knn_json:
         try:
             del neighbor['feats']
         except KeyError:
             pass
-    knn_json = json.dumps(knn_json,ensure_ascii=True)
+    knn_json = json.dumps([indicies,knn_json],ensure_ascii=True)
     send_socket_bytes(bytes(knn_json, encoding='utf-8'))
 
 if __name__ == '__main__':
