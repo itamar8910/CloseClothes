@@ -24,3 +24,4 @@ classification/*.json
 *.p
 /.pytest_cache
 tiny_faces/hr_res101.mat
+*.pyc

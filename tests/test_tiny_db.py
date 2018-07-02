@@ -26,6 +26,7 @@ def test_items_len(all_items):
 
 def test_feats_extracted(all_items : List[dict]):
     assert all(len(item['feats']) == len(item['imgs']) for item in all_items)
+    assert all(item['feats'] for item in all_items)
     
 def test_feats_shape(all_items : List[dict]):
     first_shape = np.array(all_items[0]['feats'][0]).shape
