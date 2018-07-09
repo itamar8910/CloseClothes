@@ -84,7 +84,7 @@ class ClothesListAdapter(context: Context, internal var layoutResourceId: Int, p
         }
 
         var currentItemJsonObject = JSONObject(this.data[position])
-        var currentItemFirstPicUrl = currentItemJsonObject.getJSONArray("imgs").getString(0)
+        var currentItemFirstPicUrl = currentItemJsonObject.getJSONArray("imgs").getString(currentItemJsonObject.getInt("img_index"))
         //load pic with Picasso library
         Picasso.get().load(currentItemFirstPicUrl).into(viewHolder.clotheImage);
 
