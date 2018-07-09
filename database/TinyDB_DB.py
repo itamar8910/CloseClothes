@@ -22,7 +22,7 @@ class TinyDB_DB(BaseDB):
     def get_by_url(self, url : str) -> Dict:
         q_get = Query()
         results = self.db.search(q_get.url == url)
-        assert len(results) == 1
+        # assert len(results) == 1
         return results[0]
     
     def update_feats(self, url : str, feats: List[np.ndarray]):

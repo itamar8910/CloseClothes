@@ -38,7 +38,7 @@ def insert_into_feats(color_data_pickle_path = 'img_url_to_color_data.p'):
     for item_i, item in tqdm(clothes_data.items()):
         # print
         rgb_median_weight = int(len(item['feats'][0]) / 2 / 3)
-       
+               
         new_feats = [
             deep_feats + list(color_data['median']) * rgb_median_weight for color_data, deep_feats in zip([img_url_to_color_data[url] for url in item['imgs']], item['feats'])
         ]

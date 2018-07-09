@@ -25,11 +25,17 @@ def update_db(db):
     db.update_all_feats()
     db.init_knn()
 
+@cli.command('create_knn')
+@click.option("-db","--db_path" ,default=TINYDB_PATH)
+def create_knn_cmd(db_path):
+    init_knn(db_path)
+    
 @cli.command("update_db")
 @click.option("-db","--db_path" ,default=TINYDB_PATH)
 def update_db_cmd(db_path):
     tiny = db_class(db_path)
     update_db(tiny)
+
 
 def init_knn(db_path):
     tiny = db_class(db_path)

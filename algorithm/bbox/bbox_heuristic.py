@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 def face_to_upperbody(img_shape, face_x, face_y, face_w, face_h):
     down_shift = face_h
     WIDTH_SCALE = 3
-    HEIGHT_SCALE = 5
+    HEIGHT_SCALE = 2
 
     face_center_x = face_x + face_w/2.0
     face_center_y = face_y + face_y/2.0
@@ -40,20 +40,22 @@ def get_uperbody_bbox_from_npy(img_npy,  w_face_bbox=False ):
     tmp_locations = get_faces(img_npy)
     face_locations = []
     for loc in tmp_locations:
-        face_locations.append([float(loc[0][0]), float(loc[0][1]), float(loc[1][0] - loc[0][0]), float(loc[1][1] - loc[1][0])])
+        face_locations.append([float(loc[0][0]), float(loc[0][1]), float(loc[1][0] - loc[0][0]), float(loc[1][1] - loc[0][1])])
 
-    if len(face_locations) == 0:
-        raise Exception("NO FACES DETECTED")
+    # if len(face_locations) == 0:
+    #     raise Exception("NO FACES DETECTED")
         
-    if len(face_locations) > 1:
-        print("WARNING: More than one person detected, currently only supoorts one person oer image")
+    # if len(face_locations) > 1:
+    #     print("WARNING: More than one person detected, currently only supoorts one person oer image")
     
-    face_location = face_locations[0]
+    # face_location = face_locations[0]
         
-    top, right, bottom, left = face_location
-    print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
+    # # top, right, bottom, left = face_location
+    # # print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
     
-    face_bbox = (left, top, right-left, bottom-top) # x y w h
+    # face_bbox = (left, top, right-left, bottom-top) # x y w h
+    face_bbox = face_locations[0] # x y w h
+    print('face: x w y h:', face_bbox)
     upperbody_bbox = face_to_upperbody(img_npy.shape, *face_bbox) # x y w h
     if w_face_bbox:
         return face_bbox, upperbody_bbox

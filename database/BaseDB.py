@@ -9,6 +9,8 @@ from sklearn.neighbors import NearestNeighbors
 import pickle
 from lazy import lazy
 
+ONLY_RGB = False
+
 KNN_PATH = 'database/data/knn_20180610.p'
 class BaseDB(abc.ABC):
     @lazy
@@ -47,8 +49,8 @@ class BaseDB(abc.ABC):
     def init_knn(self, save_path = KNN_PATH):
         clf = NearestNeighbors()
         # TODO: run fit every time you the db changes
-        X = np.stack([np.array(feats) for item in self.all_items for feats in item['feats']])
-        labels = self.labels()
+        X = np.stack([np.array(feats[8192:8195] if ONLY_RGB else feats[:8195]) for item in self.all_items for feats in item['feats']])
+        labels = self.labels
         clf.fit(X,labels) # flattened array https://stackoverflow.com/a/952952/4342751
         if save_path:
             with open(save_path, 'wb') as f:
@@ -85,13 +87,19 @@ class BaseDB(abc.ABC):
 
     def knn(self, center: str, num_neighbors: int) -> List[Tuple[int,dict]]:
         """ given a "center" path to image vector, return the {num_neighbors} nearest DB items """
-        center_feats = self.feat_extractor.get_feats([center])
+        center_feats = self.feat_extractor.get_feats([center], verbose=True)
+        if ONLY_RGB:
+            center_feats[0] = center_feats[0][8192:8195]
+        print('number of feats in KNN query:', len(center_feats[0]))
         neighbor_indicies = self.knn_clasifier.kneighbors(center_feats, num_neighbors, return_distance=False)
+        print('neighbor indices:', neighbor_indicies)
+        
         clothes_urls = [self.labels[index] for index in neighbor_indicies[0]]
         inner_indices = [self.inner_index(index,self.labels) for index in neighbor_indicies[0]]
-        clothes = [self.get_by_url(url) for url in clothes_urls]
+        import tqdm
+        clothes = [self.get_by_url(url) for url in tqdm.tqdm(clothes_urls, desc="retrieiving clothes data")]
         assert len(clothes) == num_neighbors
-        return list(zip( inner_indices,clothes))
+        return inner_indices, clothes
 
     def update_all_feats(self, verbose=True):
         for item in tqdm(iterable=self.get_all(), desc="Feats updated", disable=not verbose):
