@@ -25,5 +25,5 @@
     ├── server - server for communicating with client android app
 
 ## Authors 
-- Itamar Shenhar github: [itamar8910](www.github.com/itamar8910) - email:[]()
+- Itamar Shenhar github: [itamar8910](www.github.com/itamar8910) - email: itamar8910@gmail.com
 - Tomer Keren github: [Tadaboody](www.github.com/Tadaboody) - email: tomer.keren.dev@gmail.com
