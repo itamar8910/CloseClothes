@@ -6,6 +6,7 @@ import concurrent.futures
 from functools import partial
 
 class ScrapeProduct(ABC):
+    """Abstract base class of a scraper. Implements the downloading and orginizing where it's derivitives implement analyzing the HTML"""
     def __init__(self, url, soup = None):
         self.url = url
         self.name = None

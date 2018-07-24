@@ -14,7 +14,7 @@ N_PRODUCTS = 0
 N_SCRAPED = 0
 
 class CastroProduct(ScrapeProduct):
-
+    """ Implementation of scraping for castro.com"""
     def __init__(self, url, gender):
         super().__init__(url)
         self.gender = gender
@@ -78,9 +78,7 @@ if __name__ == "__main__":
             'https://www.castro.com/he/WOMEN/Jumpsuits.html',
         ]
     }
-<<<<<<< Updated upstream:scraping/castro.py
     CastroProduct.scrape_whole_brand(categories,'castro.json')
-=======
     products = []
     # TODO: for some reason, returned html is not good when
     # there are more pending requests than #CPUs. fix this.
@@ -99,6 +97,3 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     print("ran");exit()
     scrape_castro('castro.json')
->>>>>>> Stashed changes:algorithm/scraping/castro.py
-
- 

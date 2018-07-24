@@ -21,8 +21,6 @@ docutils==0.14
 enum34==1.1.6
 face-recognition==1.2.2
 face-recognition-models==0.3.0
-Flask==1.0.2
-gensim==3.4.0
 h5py==2.7.1
 html5lib==0.9999999
 idna==2.6

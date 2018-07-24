@@ -30,12 +30,14 @@ def main():
         print("waiting for connection")
         client_socket, client_address = sever_socket.accept()
         handle_client(client_socket)
-        # client_thread = Thread(target=handle_client,args=(client_socket,))
-        # client_thread.start()
+        client_thread = Thread(target=handle_client,args=(client_socket,))
+        client_thread.start()
 
 def handle_client(client_socket):
+    """ Responds to a given socket"""
     print("Handling client:")
     def read_socket_bytes(message_length):
+        """ reads `message_length` bytes from the client_socket"""
         chunks = []
         bytes_recd = 0
         while bytes_recd < message_length:
@@ -51,6 +53,7 @@ def handle_client(client_socket):
         return  b''.join(chunks)
     
     def send_socket_bytes(message : bytes):
+        """ Sends the message by first sending it's length, and then the message itself"""
         msg_length = pack('!i', len(message))
         client_socket.sendall(msg_length)
         client_socket.sendall(message)

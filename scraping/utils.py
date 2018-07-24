@@ -9,6 +9,7 @@ def get_html(url):
     return (requests.get(url).text)
 
 def get_html_selenium(url, verbose = False):
+    """downloads the html from `url` using selenium and phantomjs"""
     t1 = time.time()
     if verbose:
         print("scraping:", url)
