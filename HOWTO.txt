@@ -1,0 +1,27 @@
+HOWTO:
+
+Requirements:
+python 3.5+
+dlib: https://gist.github.com/ageitgey/629d75c1baac34dfa5ca2a1928a7aeaf
+Android Studio: https://developer.android.com/studio/ with Kotlin configured
+
+Setting up:
+Front end:
+Open the `android` directory in Android Studio.
+Build and run.
+Back end:
+Run:  
+
+$ python3.5 -m venv venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
+$ python main.py init_db --update_feats -o database/data/*_clean.json # This extracts features from scraped data and will take a while
+$ python main.py server
+
+---
+## Authors 
+- Itamar Shenhar github: [itamar8910](www.github.com/itamar8910) - email: itamar8910@gmail.com
+- Tomer Keren github: [Tadaboody](www.github.com/Tadaboody) - email: tomer.keren.dev@gmail.com
+
+
+(TAKEN FROM README.md)
