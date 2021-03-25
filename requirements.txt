@@ -60,7 +60,7 @@ pyparsing==2.2.0
 pytest==3.6.0
 python-dateutil==2.6.1
 pytz==2017.3
-PyYAML==3.12
+PyYAML==5.4
 QueryableList==3.1.0
 requests==2.18.4
 rope==0.10.7
