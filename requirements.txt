@@ -76,7 +76,7 @@ tensorflow-tensorboard==0.4.0rc3
 tinydb==3.8.1.post1
 tqdm==4.23.1
 traitlets==4.3.2
-urllib3==1.22
+urllib3==1.26.5
 wcwidth==0.1.7
 Werkzeug==0.14.1
 wrapt==1.10.11
